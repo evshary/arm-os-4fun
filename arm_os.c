@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdarg.h>
 #include "reg.h"
 
 #define USART_FLAG_TXE  ((uint16_t) 0x0080)
@@ -7,22 +8,88 @@
 
 static char greet[] = "Hello World!\n";
 void run_proc(unsigned int *stack);
+void print_char(char ch);
+void print_str(const char *str);
+void printfmt(char *fmt,...);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 unsigned int current_proc_id = 0;
 
-void print(const char *str)
+void print_char(char ch)
+{
+    while (!(*(USART2_SR) & USART_FLAG_TXE));
+    *(USART2_DR) = (ch & 0xFF);
+}
+
+void print_str(const char *str)
 {
     while (*str) {
-        while (!(*(USART2_SR) & USART_FLAG_TXE));
-        *(USART2_DR) = (*str & 0xFF);
+        print_char(*str);
         str++;
     }
 }
 
+char *cvt_int(unsigned int num, int base)
+{
+	static char repr[]= "0123456789abcdef";
+	static char buffer[50];
+	char *ptr;
+
+	ptr = &buffer[49];
+	*ptr = '\0';
+
+	do {
+		*--ptr = repr[num%base];
+		num /= base;
+	} while(num != 0);
+
+	return(ptr);
+}
+
+void printfmt(char *fmt, ...)
+{
+    char *ptr;
+    int i;
+    char *s;
+    va_list arg;
+	va_start(arg, fmt);
+
+    for (ptr = fmt; *ptr != 0; ptr++) {
+        if (*ptr != '%') {
+            print_char(*ptr);
+            continue;
+        }
+        ptr++;
+        switch(*ptr)
+		{
+			case 'c': 
+				i = va_arg(arg, int);
+				print_char(i);
+				break;
+			case 'd': 
+                i = va_arg(arg, int);
+				if(i<0) {
+				    i = -i;
+					print_char('-');
+				}
+				print_str(cvt_int(i,10));
+				break;
+			case 's':
+                s = va_arg(arg, char *);
+				print_str(s);
+				break;
+			case 'x':
+                i = va_arg(arg, unsigned int);
+				print_str(cvt_int(i,16));
+				break;
+		}
+    }
+    va_end(arg);
+}
+
 void proc1(void)
 {
-	print("This is process 1\r\n");
+	printfmt("This is process 1\r\n");
 	while(1);
 }
 
@@ -59,7 +126,7 @@ void main(void)
     *(USART2_CR3) = 0x00000000;
     *(USART2_CR1) |= 0x2000;
 
-    print(greet);
+    printfmt(greet);
     proc_id = init_process(proc1);
     start_process(proc_id);
     while(1);
