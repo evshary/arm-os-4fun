@@ -12,7 +12,7 @@ QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 BINARY = arm_os.bin
 all: $(BINARY)
 
-$(BINARY): start.c arm_os.c
+$(BINARY): start.c arm_os.c run_proc.S
 	$(CC) $(CFLAGS) $^ -o arm_os.elf
 	$(OBJCOPY) -Obinary arm_os.elf arm_os.bin
 	$(OBJDUMP) -S arm_os.elf > arm_os.list

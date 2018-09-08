@@ -17,7 +17,7 @@ SECTIONS
         _end_data = .;
     }
 
-    .bss (ADDR(.text)+SIZEOF(.text)) :
+    .bss (ADDR(.data)+SIZEOF(.data)) :
     {
         _start_bss = .;
         *(.bss)
