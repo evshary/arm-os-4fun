@@ -10,7 +10,7 @@ static char greet[] = "Hello World!\n";
 void run_proc(unsigned int *stack);
 void print_char(char ch);
 void print_str(const char *str);
-void printfmt(char *fmt,...);
+void printfmt(char *fmt, ...);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 unsigned int current_proc_id = 0;
@@ -31,19 +31,19 @@ void print_str(const char *str)
 
 char *cvt_int(unsigned int num, int base)
 {
-	static char repr[]= "0123456789abcdef";
-	static char buffer[50];
-	char *ptr;
+    static char repr[] = "0123456789abcdef";
+    static char buffer[50];
+    char *ptr;
 
-	ptr = &buffer[49];
-	*ptr = '\0';
+    ptr = &buffer[49];
+    *ptr = '\0';
 
-	do {
-		*--ptr = repr[num%base];
-		num /= base;
-	} while(num != 0);
+    do {
+        *--ptr = repr[num % base];
+        num /= base;
+    } while (num != 0);
 
-	return(ptr);
+    return (ptr);
 }
 
 void printfmt(char *fmt, ...)
@@ -52,7 +52,7 @@ void printfmt(char *fmt, ...)
     int i;
     char *s;
     va_list arg;
-	va_start(arg, fmt);
+    va_start(arg, fmt);
 
     for (ptr = fmt; *ptr != 0; ptr++) {
         if (*ptr != '%') {
@@ -60,60 +60,59 @@ void printfmt(char *fmt, ...)
             continue;
         }
         ptr++;
-        switch(*ptr)
-		{
-			case 'c': 
-				i = va_arg(arg, int);
-				print_char(i);
-				break;
-			case 'd': 
+        switch (*ptr) {
+            case 'c':
                 i = va_arg(arg, int);
-				if(i<0) {
-				    i = -i;
-					print_char('-');
-				}
-				print_str(cvt_int(i,10));
-				break;
-			case 's':
+                print_char(i);
+                break;
+            case 'd':
+                i = va_arg(arg, int);
+                if (i < 0) {
+                    i = -i;
+                    print_char('-');
+                }
+                print_str(cvt_int(i, 10));
+                break;
+            case 's':
                 s = va_arg(arg, char *);
-				print_str(s);
-				break;
-			case 'x':
+                print_str(s);
+                break;
+            case 'x':
                 i = va_arg(arg, unsigned int);
-				print_str(cvt_int(i,16));
-				break;
-		}
+                print_str(cvt_int(i, 16));
+                break;
+        }
     }
     va_end(arg);
 }
 
 void proc1(void)
 {
-	printfmt("This is process 1\r\n");
-	while(1);
+    printfmt("This is process 1\r\n");
+    while (1);
 }
 
 int init_process(void *proc_addr)
 {
-	/* 
+    /*
      * We will pop the regiser with the following order, r4-r12, lr
      * It's necessary to init lr with process address first.
-	 */
-	user_stack[current_proc_id][STACK_SIZE-16+9] = (unsigned int)proc_addr;
-	current_proc_id++;
-	return current_proc_id;
+     */
+    user_stack[current_proc_id][STACK_SIZE - 16 + 9] = (unsigned int)proc_addr;
+    current_proc_id++;
+    return current_proc_id;
 }
 
 void start_process(int id)
 {
-    run_proc(&user_stack[id-1][STACK_SIZE-16]);
+    run_proc(&user_stack[id - 1][STACK_SIZE - 16]);
 }
 
 void main(void)
 {
     int proc_id;
-    *(RCC_APB2ENR) |= (uint32_t) (0x00000001 | 0x00000004);
-    *(RCC_APB1ENR) |= (uint32_t) (0x00020000);
+    *(RCC_APB2ENR) |= (uint32_t)(0x00000001 | 0x00000004);
+    *(RCC_APB1ENR) |= (uint32_t)(0x00020000);
 
     *(GPIOA_CRL) = 0x00004B00;
     *(GPIOA_CRH) = 0x44444444;
@@ -129,5 +128,5 @@ void main(void)
     printfmt(greet);
     proc_id = init_process(proc1);
     start_process(proc_id);
-    while(1);
+    while (1);
 }

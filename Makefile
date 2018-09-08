@@ -23,3 +23,6 @@ clean:
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
 	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin
+
+style:
+	astyle --style=linux -cnpswHUSR *.c,*.h
