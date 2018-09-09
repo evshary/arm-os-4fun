@@ -6,14 +6,15 @@
 #define USER_PROCESS 32
 #define STACK_SIZE   512
 
-static char greet[] = "Hello World!\n";
-void run_proc(unsigned int *stack);
+static char greet[] = "Hi, This is arm-os-4fun!\n";
+unsigned int *run_proc(unsigned int *stack);
 void print_char(char ch);
 void print_str(const char *str);
 void printfmt(char *fmt, ...);
 
-unsigned int user_stack[USER_PROCESS][STACK_SIZE];
-unsigned int current_proc_id = 0;
+unsigned int  user_stack[USER_PROCESS][STACK_SIZE];
+unsigned int* user_stack_ptr[USER_PROCESS];
+unsigned int  current_proc_id = 0;
 
 void print_char(char ch)
 {
@@ -98,6 +99,7 @@ void proc1(void)
 {
     printfmt("This is process 1\r\n");
     first_call();
+    printfmt("Back to process 1\r\n");
     while (1);
 }
 
@@ -107,14 +109,15 @@ int init_process(void *proc_addr)
      * We will pop the regiser with the following order, r4-r12, lr
      * It's necessary to init lr with process address first.
      */
-    user_stack[current_proc_id][STACK_SIZE - 16 + 9] = (unsigned int)proc_addr;
+    user_stack_ptr[current_proc_id] = &user_stack[current_proc_id][STACK_SIZE - 16];
+    user_stack_ptr[current_proc_id][9] = (unsigned int)proc_addr;
     current_proc_id++;
     return current_proc_id;
 }
 
 void start_process(int id)
 {
-    run_proc(&user_stack[id - 1][STACK_SIZE - 16]);
+    user_stack_ptr[id - 1] = run_proc(user_stack_ptr[id - 1]);
 }
 
 void main(void)
@@ -138,5 +141,6 @@ void main(void)
     proc_id = init_process(proc1);
     start_process(proc_id);
     printfmt("Return from process 1\r\n");
+    start_process(proc_id);
     while (1);
 }
