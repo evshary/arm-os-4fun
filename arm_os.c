@@ -86,9 +86,18 @@ void printfmt(char *fmt, ...)
     va_end(arg);
 }
 
+void first_call(void)
+{
+    __asm__
+    (
+        "svc 0" 
+    );
+}
+
 void proc1(void)
 {
     printfmt("This is process 1\r\n");
+    first_call();
     while (1);
 }
 
@@ -128,5 +137,6 @@ void main(void)
     printfmt(greet);
     proc_id = init_process(proc1);
     start_process(proc_id);
+    printfmt("Return from process 1\r\n");
     while (1);
 }

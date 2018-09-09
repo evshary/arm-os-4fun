@@ -34,10 +34,20 @@ void hardfault_handler(void)
     while (1);
 }
 
+void svc_handler(void);
+
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
-    (uint32_t *) &_end_stack,      /* stack pointer */
-    (uint32_t *) reset_handler, /* code entry point */
-    (uint32_t *) nmi_handler,   /* NMI handler */
-    (uint32_t *) hardfault_handler  /* hard fault handler */
+    (uint32_t *) &_end_stack,        /* stack pointer */
+    (uint32_t *) reset_handler,      /* code entry point */
+    (uint32_t *) nmi_handler,        /* NMI handler */
+    (uint32_t *) hardfault_handler,  /* hard fault handler */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    (uint32_t *) svc_handler         /* SVC handler */
 };
