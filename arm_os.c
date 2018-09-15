@@ -137,6 +137,7 @@ int init_process(void *proc_addr)
      * While lr=0xfffffffd, ARM will go to thread mode, change sp to psp,
      * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
      */
+    /* If we don't set lr=0xfffffffd, running second task will cause problem. */
     user_stack_ptr[current_proc_id][8] = (unsigned int)0xFFFFFFFD;
     /* It's necessary to init lr with process address first. */
     user_stack_ptr[current_proc_id][15] = (unsigned int)proc_addr;
