@@ -9,10 +9,12 @@ CFLAGS = -fno-common -ffreestanding \
 
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 
+SRC = start.c arm_os.c run_proc.S output.c
+
 BINARY = arm_os.bin
 all: style $(BINARY)
 
-$(BINARY): start.c arm_os.c run_proc.S
+$(BINARY): $(SRC)
 	$(CC) $(CFLAGS) $^ -o arm_os.elf
 	$(OBJCOPY) -Obinary arm_os.elf arm_os.bin
 	$(OBJDUMP) -S arm_os.elf > arm_os.list
