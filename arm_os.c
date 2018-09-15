@@ -11,6 +11,7 @@ unsigned int *run_proc(unsigned int *stack);
 void print_char(char ch);
 void print_str(const char *str);
 void printfmt(char *fmt, ...);
+void print_stack(unsigned int *stack, int size);
 
 unsigned int  user_stack[USER_PROCESS][STACK_SIZE];
 unsigned int* user_stack_ptr[USER_PROCESS];
@@ -87,19 +88,38 @@ void printfmt(char *fmt, ...)
     va_end(arg);
 }
 
+void print_stack(unsigned int *stack, int size)
+{
+    int i;
+    printfmt("Start to print stack %x\r\n", stack);
+    for (i = 0; i < size; i++) {
+        printfmt("%x\r\n", stack[i]);
+    }
+}
+
 void first_call(void)
 {
     __asm__
     (
-        "svc 0" 
+        "svc 0"
     );
 }
 
 void proc1(void)
 {
     printfmt("This is process 1\r\n");
+    printfmt("user_stack_ptr[0][9]=%x\r\n", user_stack_ptr[0][9]);
     first_call();
     printfmt("Back to process 1\r\n");
+    while (1);
+}
+
+void proc2(void)
+{
+    printfmt("This is process 2\r\n");
+    printfmt("user_stack_ptr[1][9]=%x\r\n", user_stack_ptr[1][9]);
+    first_call();
+    printfmt("Back to process 2\r\n");
     while (1);
 }
 
@@ -122,7 +142,7 @@ void start_process(int id)
 
 void main(void)
 {
-    int proc_id;
+    int proc_id[USER_PROCESS];
     *(RCC_APB2ENR) |= (uint32_t)(0x00000001 | 0x00000004);
     *(RCC_APB1ENR) |= (uint32_t)(0x00020000);
 
@@ -138,9 +158,14 @@ void main(void)
     *(USART2_CR1) |= 0x2000;
 
     printfmt(greet);
-    proc_id = init_process(proc1);
-    start_process(proc_id);
+    proc_id[0] = init_process(proc1);
+    printfmt("proc_id[0]=%d\r\n", proc_id[0]);
+    proc_id[1] = init_process(proc2);
+    printfmt("proc_id[1]=%d\r\n", proc_id[1]);
+    start_process(proc_id[0]);
     printfmt("Return from process 1\r\n");
-    start_process(proc_id);
+    start_process(proc_id[1]);
+    printfmt("Return from process 2\r\n");
+    start_process(proc_id[0]);
     while (1);
 }
