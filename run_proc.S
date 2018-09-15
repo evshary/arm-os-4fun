@@ -3,7 +3,7 @@
 
 .global run_proc 
 run_proc:
-    /* Save psr to r12 and push to stack, msp*/
+    /* Save psr to r12 and push to stack, msp */
     mrs r12, psr
     push {r4-r12, lr}
     
@@ -17,7 +17,7 @@ run_proc:
     isb
 
     /* pop the register and process address from psp */
-    pop {r4-r12, lr}
+    pop {r4-r11, lr}
     bx lr
 
 /* 
@@ -31,7 +31,7 @@ svc_handler:
     /* Now stack is msp, so we can't use push to save register. */
     /* r0 register is necessary, because r0 stands for return value and we should return stack address. */
     mrs r0, psp
-    stmdb r0!, {r4-r12, lr}
+    stmdb r0!, {r4-r11, lr}
 
     /* Restore the register of kernel state */
     pop {r4-r12, lr}

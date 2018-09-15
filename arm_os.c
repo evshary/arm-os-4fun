@@ -126,11 +126,22 @@ void proc2(void)
 int init_process(void *proc_addr)
 {
     /*
-     * We will pop the regiser with the following order, r4-r12, lr
-     * It's necessary to init lr with process address first.
+     * We will pop the regiser with the following order, r4-r11, lr
+     * The reason we reserve 17 is that psr, pc, lr, r12, r3-r0
+     * will be saved by ARM automatically.
+     * We save 9 register and ARM save 8 register, so total is 17.
+     * Ref: http://www.360doc.com/content/12/0506/11/532901_208997264.shtml
      */
-    user_stack_ptr[current_proc_id] = &user_stack[current_proc_id][STACK_SIZE - 16];
-    user_stack_ptr[current_proc_id][9] = (unsigned int)proc_addr;
+    user_stack_ptr[current_proc_id] = &user_stack[current_proc_id][STACK_SIZE - 17];
+    /*
+     * While lr=0xfffffffd, ARM will go to thread mode, change sp to psp,
+     * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
+     */
+    user_stack_ptr[current_proc_id][8] = (unsigned int)0xFFFFFFFD;
+    /* It's necessary to init lr with process address first. */
+    user_stack_ptr[current_proc_id][15] = (unsigned int)proc_addr;
+    /* PSR Thumb bit */
+    user_stack_ptr[current_proc_id][16] = (unsigned int)0x01000000;
     current_proc_id++;
     return current_proc_id;
 }
