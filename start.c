@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "reg.h"
+#include "output.h"
 
 extern void main(void);
 
@@ -26,11 +27,31 @@ void reset_handler(void)
 
 void nmi_handler(void)
 {
+    print_str("nmi fault\r\n");
     while (1);
 }
 
 void hardfault_handler(void)
 {
+    print_str("hard fault\r\n");
+    while (1);
+}
+
+void memfault_handler(void)
+{
+    print_str("memory fault\r\n");
+    while (1);
+}
+
+void busfault_handler(void)
+{
+    print_str("bus fault\r\n");
+    while (1);
+}
+
+void usagefault_handler(void)
+{
+    print_str("usage fault\r\n");
     while (1);
 }
 
@@ -42,9 +63,9 @@ uint32_t *isr_vectors[] = {
     (uint32_t *) reset_handler,      /* code entry point */
     (uint32_t *) nmi_handler,        /* NMI handler */
     (uint32_t *) hardfault_handler,  /* hard fault handler */
-    0,
-    0,
-    0,
+    (uint32_t *) memfault_handler,   /* memory fault handler */
+    (uint32_t *) busfault_handler,   /* bus fault handler */
+    (uint32_t *) usagefault_handler, /* usage fault handler */
     0,
     0,
     0,
