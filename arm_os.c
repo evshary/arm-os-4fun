@@ -49,10 +49,19 @@ int init_process(void *proc_addr)
      */
     user_stack_ptr[current_proc_id] = &user_stack[current_proc_id][STACK_SIZE - 17];
     /*
-     * While lr=0xfffffffd, ARM will go to thread mode, change sp to psp,
+     * While lr=0xfffffffd, ARM will go to user thread mode, change sp to psp,
      * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
      */
-    /* If we don't set lr=0xfffffffd, running second task will cause problem. */
+    /*
+     * We need to use lr=0xfffffffd, that is EXC_RETURN, to return back 
+     * to user thread mode. Control register can only make us enter user 
+     * thread mode from privileged thread mode, not privileged handler mode.
+     * Therefore, if we don't use EXC_RETURN, it will cause problem while 
+     * calling "svc" in process 2, because svc can only be called in 
+     * user thread mode but we are in privileged handler mode now.
+     * Control register just change stack from msp to psp but not from 
+     * privileged handler mode to user thread mode.
+     */
     user_stack_ptr[current_proc_id][8] = (unsigned int)0xFFFFFFFD;
     /* It's necessary to init lr with process address first. */
     user_stack_ptr[current_proc_id][15] = (unsigned int)proc_addr;
