@@ -4,6 +4,10 @@
 
 #define USER_PROCESS 32
 #define STACK_SIZE   512
+/* 72MHz */
+#define CPU_CLOCK_HZ 72000000
+/* 100 ms per tick. */
+#define TICK_RATE_HZ 10
 
 static char greet[] = "Hi, This is arm-os-4fun!\n";
 unsigned int *run_proc(unsigned int *stack);
@@ -53,13 +57,13 @@ int init_process(void *proc_addr)
      * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
      */
     /*
-     * We need to use lr=0xfffffffd, that is EXC_RETURN, to return back 
-     * to user thread mode. Control register can only make us enter user 
+     * We need to use lr=0xfffffffd, that is EXC_RETURN, to return back
+     * to user thread mode. Control register can only make us enter user
      * thread mode from privileged thread mode, not privileged handler mode.
-     * Therefore, if we don't use EXC_RETURN, it will cause problem while 
-     * calling "svc" in process 2, because svc can only be called in 
+     * Therefore, if we don't use EXC_RETURN, it will cause problem while
+     * calling "svc" in process 2, because svc can only be called in
      * user thread mode but we are in privileged handler mode now.
-     * Control register just change stack from msp to psp but not from 
+     * Control register just change stack from msp to psp but not from
      * privileged handler mode to user thread mode.
      */
     user_stack_ptr[current_proc_id][8] = (unsigned int)0xFFFFFFFD;
@@ -93,15 +97,21 @@ void main(void)
     *(USART2_CR3) = 0x00000000;
     *(USART2_CR1) |= 0x2000;
 
+    /* SysTick configuration */
+    *SYSTICK_LOAD = (CPU_CLOCK_HZ / TICK_RATE_HZ) - 1UL;
+    *SYSTICK_VAL = 0;
+    *SYSTICK_CTRL = 0x07;
+
     printfmt(greet);
     proc_id[0] = init_process(proc1);
     printfmt("proc_id[0]=%d\r\n", proc_id[0]);
     proc_id[1] = init_process(proc2);
     printfmt("proc_id[1]=%d\r\n", proc_id[1]);
-    start_process(proc_id[0]);
-    printfmt("Return from process 1\r\n");
-    start_process(proc_id[1]);
-    printfmt("Return from process 2\r\n");
-    start_process(proc_id[0]);
+    while (1) {
+        start_process(proc_id[0]);
+        printfmt("Return from process 1\r\n");
+        start_process(proc_id[1]);
+        printfmt("Return from process 2\r\n");
+    }
     while (1);
 }

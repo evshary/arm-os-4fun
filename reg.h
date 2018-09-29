@@ -41,4 +41,11 @@
 #define USART2_CR3  ((__REG) (USART2 + 0x14))
 #define USART2_GTPR ((__REG) (USART2 + 0x18))
 
+/* SysTick Memory Map */
+#define SYSTICK     ((__REG_TYPE) 0xE000E010)
+#define SYSTICK_CTRL    ((__REG) (SYSTICK + 0x00))
+#define SYSTICK_LOAD    ((__REG) (SYSTICK + 0x04))
+#define SYSTICK_VAL ((__REG) (SYSTICK + 0x08))
+#define SYSTICK_CALIB   ((__REG) (SYSTICK + 0x0C))
+
 #endif

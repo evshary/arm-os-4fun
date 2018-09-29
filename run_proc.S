@@ -27,7 +27,14 @@ run_proc:
  */
 .type svc_handler, %function
 .global svc_handler
+/* 
+ * For systick and svc, they are both back to kernel. 
+ * we can put them together.
+ */
+.type systick_handler, %function
+.global systick_handler
 svc_handler:
+systick_handler:
     /* Now stack is msp, so we can't use push to save register. */
     /* r0 register is necessary, because r0 stands for return value and we should return stack address. */
     mrs r0, psp

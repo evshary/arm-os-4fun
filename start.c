@@ -56,6 +56,7 @@ void usagefault_handler(void)
 }
 
 void svc_handler(void);
+void systick_handler(void);
 
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
@@ -70,5 +71,9 @@ uint32_t *isr_vectors[] = {
     0,
     0,
     0,
-    (uint32_t *) svc_handler         /* SVC handler */
+    (uint32_t *) svc_handler,        /* SVC handler */
+    0,
+    0,
+    0,
+    (uint32_t *) systick_handler     /* systick handler */
 };
