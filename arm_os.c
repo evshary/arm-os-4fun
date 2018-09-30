@@ -2,6 +2,7 @@
 #include "reg.h"
 #include "output.h"
 #include "tasks.h"
+#include "syscall.h"
 
 /* 72MHz */
 #define CPU_CLOCK_HZ 72000000
@@ -10,20 +11,13 @@
 
 static char greet[] = "Hi, This is arm-os-4fun!\n";
 
-void first_call(void)
-{
-    __asm__
-    (
-        "svc 0"
-    );
-}
-
 void proc1(void)
 {
     printfmt("This is process 1\r\n");
     //printfmt("user_stack_ptr[0][9]=%x\r\n", user_stack_ptr[0][9]);
     first_call();
     printfmt("Back to process 1\r\n");
+    second_call();
     while (1);
 }
 
@@ -33,6 +27,7 @@ void proc2(void)
     //printfmt("user_stack_ptr[1][9]=%x\r\n", user_stack_ptr[1][9]);
     first_call();
     printfmt("Back to process 2\r\n");
+    second_call();
     while (1);
 }
 

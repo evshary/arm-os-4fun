@@ -1,14 +1,10 @@
 #include "tasks.h"
+#include "syscall.h"
+#include "output.h"
 
 #define STACK_SIZE 512
 
 unsigned int *run_proc(unsigned int *stack);
-
-struct task_type {
-    unsigned int syscall_num;
-    void *syscall_param;
-    unsigned int *user_stack_ptr;
-};
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 struct task_type tasks[USER_PROCESS];
@@ -50,5 +46,10 @@ int init_process(void *proc_addr)
 void start_process(int id)
 {
     tasks[id - 1].user_stack_ptr = run_proc(tasks[id - 1].user_stack_ptr);
+    if (cur_syscall_num > 0) {
+        tasks[id - 1].syscall_num = cur_syscall_num;
+        tasks[id - 1].syscall_param = cur_syscall_param;
+        printfmt("syscall_num=%d\r\n", tasks[id - 1].syscall_num);
+    }
 }
 

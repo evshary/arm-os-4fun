@@ -3,6 +3,12 @@
 
 #define USER_PROCESS 32
 
+struct task_type {
+    unsigned int syscall_num;
+    void *syscall_param;
+    unsigned int *user_stack_ptr;
+};
+
 int init_process(void *proc_addr);
 void start_process(int id);
 
