@@ -2,25 +2,32 @@
 #include "syscall.h"
 #include "output.h"
 
+#define TASK_NONE      0
+#define TASK_READY     1
+#define TASK_BLOCK     2
+#define TASK_RUNNING   3
+
 #define STACK_SIZE 512
 
 unsigned int *run_proc(unsigned int *stack);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 struct task_control_block tasks[USER_PROCESS];
+unsigned char current_task_id;
 
 void tasks_init(void)
 {
     int i;
     for (i = 0; i < USER_PROCESS; i++) {
         tasks[i].id = 0;
-        tasks[i].status = 0;
+        tasks[i].status = TASK_NONE;
         tasks[i].priority = 0;
         tasks[i].time = 0;
         tasks[i].syscall_num = 0;
         tasks[i].syscall_param = 0;
         tasks[i].user_stack_ptr = 0;
     }
+    current_task_id = -1;
 }
 
 int new_task(void *proc_addr, int priority)
@@ -69,31 +76,47 @@ int new_task(void *proc_addr, int priority)
     /* Update the task member */
     tasks[available_id].id = available_id + 1;
     tasks[available_id].priority = priority;
+    tasks[available_id].status = TASK_READY;
 
     available_id++;
     return available_id;
 }
 
-void start_process(int id)
+void tasks_scheduler(void)
 {
-    tasks[id - 1].user_stack_ptr = run_proc(tasks[id - 1].user_stack_ptr);
+    int i, id;
+
+    /* Select available tasks */
+    /* Round robin scheduler */
+    for (i = 1; i <= USER_PROCESS; i++) {
+        if (tasks[(current_task_id + i) % USER_PROCESS].status == TASK_READY) {
+            id = (current_task_id + i) % USER_PROCESS;
+            break;
+        }
+    }
+    printfmt("Now we want to run id=%d\r\n", id);
+    tasks[id].status = TASK_RUNNING;
+    current_task_id = id;
+
+    tasks[id].user_stack_ptr = run_proc(tasks[id].user_stack_ptr);
     if (cur_syscall_num > 0) {
-        tasks[id - 1].syscall_num = cur_syscall_num;
-        tasks[id - 1].syscall_param = cur_syscall_param;
-        printfmt("syscall_num=%d\r\n", tasks[id - 1].syscall_num);
+        tasks[id].syscall_num = cur_syscall_num;
+        tasks[id].syscall_param = cur_syscall_param;
+        printfmt("syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
-        switch (tasks[id - 1].syscall_num) {
+        switch (tasks[id].syscall_num) {
             case SYSCALL_GET_TASKID:
-                printfmt("Task ID = %d\r\n", tasks[id - 1].id);
-                ret_val = &tasks[id - 1].id;
+                printfmt("Task ID = %d\r\n", tasks[id].id);
+                ret_val = &tasks[id].id;
                 break;
             case SYSCALL_GET_PRIORITY:
-                printfmt("Priority = %d\r\n", tasks[id - 1].priority);
-                ret_val = &tasks[id - 1].priority;
+                printfmt("Priority = %d\r\n", tasks[id].priority);
+                ret_val = &tasks[id].priority;
                 break;
             default:
                 printfmt("Unsupported syscall num\r\n");
         }
     }
+    tasks[id].status = TASK_READY;
 }
 

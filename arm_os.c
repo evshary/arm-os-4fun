@@ -66,10 +66,7 @@ void main(void)
     proc_id[1] = new_task(proc2, 2);
     printfmt("proc_id[1]=%d\r\n", proc_id[1]);
     while (1) {
-        start_process(proc_id[0]);
-        printfmt("Return from process 1\r\n");
-        start_process(proc_id[1]);
-        printfmt("Return from process 2\r\n");
+        tasks_scheduler();
     }
     while (1);
 }
