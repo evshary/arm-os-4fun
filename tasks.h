@@ -13,7 +13,8 @@ struct task_control_block {
     unsigned int *user_stack_ptr;
 };
 
-int init_process(void *proc_addr);
+void tasks_init(void);
+int new_task(void *proc_addr);
 void start_process(int id);
 
 #endif /*__TASKS_H__*/

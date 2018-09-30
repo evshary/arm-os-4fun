@@ -54,9 +54,10 @@ void main(void)
     *SYSTICK_CTRL = 0x07;
 
     printfmt(greet);
-    proc_id[0] = init_process(proc1);
+    tasks_init();
+    proc_id[0] = new_task(proc1);
     printfmt("proc_id[0]=%d\r\n", proc_id[0]);
-    proc_id[1] = init_process(proc2);
+    proc_id[1] = new_task(proc2);
     printfmt("proc_id[1]=%d\r\n", proc_id[1]);
     while (1) {
         start_process(proc_id[0]);

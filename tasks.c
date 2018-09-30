@@ -8,10 +8,36 @@ unsigned int *run_proc(unsigned int *stack);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 struct task_control_block tasks[USER_PROCESS];
-unsigned int current_proc_id = 0;
 
-int init_process(void *proc_addr)
+void tasks_init(void)
 {
+    int i;
+    for (i = 0; i < USER_PROCESS; i++) {
+        tasks[i].id = 0;
+        tasks[i].status = 0;
+        tasks[i].priority = 0;
+        tasks[i].time = 0;
+        tasks[i].syscall_num = 0;
+        tasks[i].syscall_param = 0;
+        tasks[i].user_stack_ptr = 0;
+    }
+}
+
+int new_task(void *proc_addr)
+{
+    unsigned int available_id = 0;
+    int i;
+
+    /* Select empty tasks */
+    for (i = 0; i < USER_PROCESS; i++) {
+        if (tasks[i].id == 0) {
+            available_id = i;
+            break;
+        }
+    }
+    /* Not enough space for new process */
+    if (i >= USER_PROCESS)
+        return -1;
     /*
      * We will pop the regiser with the following order, r4-r11, lr
      * The reason we reserve 17 is that psr, pc, lr, r12, r3-r0
@@ -19,7 +45,7 @@ int init_process(void *proc_addr)
      * We save 9 register and ARM save 8 register, so total is 17.
      * Ref: http://www.360doc.com/content/12/0506/11/532901_208997264.shtml
      */
-    tasks[current_proc_id].user_stack_ptr = &user_stack[current_proc_id][STACK_SIZE - 17];
+    tasks[available_id].user_stack_ptr = &user_stack[available_id][STACK_SIZE - 17];
     /*
      * While lr=0xfffffffd, ARM will go to user thread mode, change sp to psp,
      * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
@@ -34,13 +60,13 @@ int init_process(void *proc_addr)
      * Control register just change stack from msp to psp but not from
      * privileged handler mode to user thread mode.
      */
-    tasks[current_proc_id].user_stack_ptr[8] = (unsigned int)0xFFFFFFFD;
+    tasks[available_id].user_stack_ptr[8] = (unsigned int)0xFFFFFFFD;
     /* It's necessary to init lr with process address first. */
-    tasks[current_proc_id].user_stack_ptr[15] = (unsigned int)proc_addr;
+    tasks[available_id].user_stack_ptr[15] = (unsigned int)proc_addr;
     /* PSR Thumb bit */
-    tasks[current_proc_id].user_stack_ptr[16] = (unsigned int)0x01000000;
-    current_proc_id++;
-    return current_proc_id;
+    tasks[available_id].user_stack_ptr[16] = (unsigned int)0x01000000;
+    available_id++;
+    return available_id;
 }
 
 void start_process(int id)
