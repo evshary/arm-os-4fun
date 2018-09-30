@@ -7,7 +7,7 @@
 unsigned int *run_proc(unsigned int *stack);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
-struct task_type tasks[USER_PROCESS];
+struct task_control_block tasks[USER_PROCESS];
 unsigned int current_proc_id = 0;
 
 int init_process(void *proc_addr)
@@ -50,6 +50,17 @@ void start_process(int id)
         tasks[id - 1].syscall_num = cur_syscall_num;
         tasks[id - 1].syscall_param = cur_syscall_param;
         printfmt("syscall_num=%d\r\n", tasks[id - 1].syscall_num);
+        /* Handling the system call */
+        switch (tasks[id - 1].syscall_num) {
+            case SYSCALL_FIRST_CALL:
+                printfmt("This is first call\r\n");
+                break;
+            case SYSCALL_SECOND_CALL:
+                printfmt("This is second call\r\n");
+                break;
+            default:
+                printfmt("Unsupported syscall num\r\n");
+        }
     }
 }
 
