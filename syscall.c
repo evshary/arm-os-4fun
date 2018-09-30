@@ -1,32 +1,27 @@
 #include "syscall.h"
 #include "tasks.h"
-
-int cur_syscall_num;
-void *cur_syscall_param;
-void *ret_val;
+#include "output.h"
 
 int get_taskid(void)
 {
-    cur_syscall_num = SYSCALL_GET_TASKID;
-    cur_syscall_param = 0;
+    void *ret_val;
+    task_syscall_setparam(SYSCALL_GET_TASKID, 0);
     __asm__
     (
         "svc 0"
     );
-    cur_syscall_num = SYSCALL_INIT;
-    cur_syscall_param = 0;
+    ret_val = task_syscall_getretval();
     return *((int *)ret_val);
 }
 
 int get_priority(void)
 {
-    cur_syscall_num = SYSCALL_GET_PRIORITY;
-    cur_syscall_param = 0;
+    void *ret_val;
+    task_syscall_setparam(SYSCALL_GET_PRIORITY, 0);
     __asm__
     (
         "svc 0"
     );
-    cur_syscall_num = SYSCALL_INIT;
-    cur_syscall_param = 0;
+    ret_val = task_syscall_getretval();
     return *((int *)ret_val);
 }

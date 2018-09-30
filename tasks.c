@@ -82,6 +82,17 @@ int new_task(void *proc_addr, int priority)
     return available_id;
 }
 
+void task_syscall_setparam(int syscall_num, void *param)
+{
+    tasks[current_task_id].syscall_num = syscall_num;
+    tasks[current_task_id].syscall_param = param;
+}
+
+void *task_syscall_getretval(void)
+{
+    return tasks[current_task_id].syscall_retval;
+}
+
 void tasks_scheduler(void)
 {
     int i, id;
@@ -99,23 +110,23 @@ void tasks_scheduler(void)
     current_task_id = id;
 
     tasks[id].user_stack_ptr = run_proc(tasks[id].user_stack_ptr);
-    if (cur_syscall_num > 0) {
-        tasks[id].syscall_num = cur_syscall_num;
-        tasks[id].syscall_param = cur_syscall_param;
+    if (tasks[id].syscall_num > 0) {
         printfmt("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
         switch (tasks[id].syscall_num) {
             case SYSCALL_GET_TASKID:
                 printfmt("KERNEL: Task ID = %d\r\n", tasks[id].id);
-                ret_val = &tasks[id].id;
+                tasks[id].syscall_retval = &tasks[id].id;
                 break;
             case SYSCALL_GET_PRIORITY:
                 printfmt("KERNEL: Priority = %d\r\n", tasks[id].priority);
-                ret_val = &tasks[id].priority;
+                tasks[id].syscall_retval = &tasks[id].priority;
                 break;
             default:
                 printfmt("KERNEL: Unsupported syscall num\r\n");
         }
+        tasks[id].syscall_num = SYSCALL_INIT;
+        tasks[id].syscall_param = 0;
     }
     tasks[id].status = TASK_READY;
 }
