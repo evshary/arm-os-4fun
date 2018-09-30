@@ -14,7 +14,7 @@ struct task_control_block {
 };
 
 void tasks_init(void);
-int new_task(void *proc_addr);
+int new_task(void *proc_addr, int priority);
 void start_process(int id);
 
 #endif /*__TASKS_H__*/

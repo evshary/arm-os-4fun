@@ -13,25 +13,27 @@ static char greet[] = "Hi, This is arm-os-4fun!\n";
 
 void proc1(void)
 {
-    int id;
+    int id, priority;
     printfmt("This is process 1\r\n");
     //printfmt("user_stack_ptr[0][9]=%x\r\n", user_stack_ptr[0][9]);
     id = get_taskid();
     printfmt("user space: task id=%d\r\n", id);
     printfmt("Back to process 1\r\n");
-    second_call();
+    priority = get_priority();
+    printfmt("user space: priority=%d\r\n", priority);
     while (1);
 }
 
 void proc2(void)
 {
-    int id;
+    int id, priority;
     printfmt("This is process 2\r\n");
     //printfmt("user_stack_ptr[1][9]=%x\r\n", user_stack_ptr[1][9]);
     id = get_taskid();
     printfmt("user space: task id=%d\r\n", id);
     printfmt("Back to process 2\r\n");
-    second_call();
+    priority = get_priority();
+    printfmt("user space: priority=%d\r\n", priority);
     while (1);
 }
 
@@ -59,9 +61,9 @@ void main(void)
 
     printfmt(greet);
     tasks_init();
-    proc_id[0] = new_task(proc1);
+    proc_id[0] = new_task(proc1, 1);
     printfmt("proc_id[0]=%d\r\n", proc_id[0]);
-    proc_id[1] = new_task(proc2);
+    proc_id[1] = new_task(proc2, 2);
     printfmt("proc_id[1]=%d\r\n", proc_id[1]);
     while (1) {
         start_process(proc_id[0]);

@@ -18,9 +18,9 @@ int get_taskid(void)
     return *((int *)ret_val);
 }
 
-void second_call(void)
+int get_priority(void)
 {
-    cur_syscall_num = SYSCALL_SECOND_CALL;
+    cur_syscall_num = SYSCALL_GET_PRIORITY;
     cur_syscall_param = 0;
     __asm__
     (
@@ -28,4 +28,5 @@ void second_call(void)
     );
     cur_syscall_num = SYSCALL_INIT;
     cur_syscall_param = 0;
+    return *((int *)ret_val);
 }
