@@ -3,10 +3,11 @@
 
 int cur_syscall_num;
 void *cur_syscall_param;
+void *ret_val;
 
-void first_call(void)
+int get_taskid(void)
 {
-    cur_syscall_num = SYSCALL_FIRST_CALL;
+    cur_syscall_num = SYSCALL_GET_TASKID;
     cur_syscall_param = 0;
     __asm__
     (
@@ -14,6 +15,7 @@ void first_call(void)
     );
     cur_syscall_num = SYSCALL_INIT;
     cur_syscall_param = 0;
+    return *((int *)ret_val);
 }
 
 void second_call(void)

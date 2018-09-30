@@ -13,9 +13,11 @@ static char greet[] = "Hi, This is arm-os-4fun!\n";
 
 void proc1(void)
 {
+    int id;
     printfmt("This is process 1\r\n");
     //printfmt("user_stack_ptr[0][9]=%x\r\n", user_stack_ptr[0][9]);
-    first_call();
+    id = get_taskid();
+    printfmt("user space: task id=%d\r\n", id);
     printfmt("Back to process 1\r\n");
     second_call();
     while (1);
@@ -23,9 +25,11 @@ void proc1(void)
 
 void proc2(void)
 {
+    int id;
     printfmt("This is process 2\r\n");
     //printfmt("user_stack_ptr[1][9]=%x\r\n", user_stack_ptr[1][9]);
-    first_call();
+    id = get_taskid();
+    printfmt("user space: task id=%d\r\n", id);
     printfmt("Back to process 2\r\n");
     second_call();
     while (1);

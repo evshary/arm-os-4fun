@@ -65,6 +65,8 @@ int new_task(void *proc_addr)
     tasks[available_id].user_stack_ptr[15] = (unsigned int)proc_addr;
     /* PSR Thumb bit */
     tasks[available_id].user_stack_ptr[16] = (unsigned int)0x01000000;
+    /* Update the task member */
+    tasks[available_id].id = available_id + 1;
     available_id++;
     return available_id;
 }
@@ -78,8 +80,9 @@ void start_process(int id)
         printfmt("syscall_num=%d\r\n", tasks[id - 1].syscall_num);
         /* Handling the system call */
         switch (tasks[id - 1].syscall_num) {
-            case SYSCALL_FIRST_CALL:
-                printfmt("This is first call\r\n");
+            case SYSCALL_GET_TASKID:
+                printfmt("Task ID = %d\r\n", tasks[id - 1].id);
+                ret_val = &tasks[id - 1].id;
                 break;
             case SYSCALL_SECOND_CALL:
                 printfmt("This is second call\r\n");
