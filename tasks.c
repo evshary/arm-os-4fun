@@ -94,7 +94,7 @@ void tasks_scheduler(void)
             break;
         }
     }
-    printfmt("Now we want to run id=%d\r\n", id);
+    printfmt("KERNEL: Now we want to run id=%d\r\n", id);
     tasks[id].status = TASK_RUNNING;
     current_task_id = id;
 
@@ -102,19 +102,19 @@ void tasks_scheduler(void)
     if (cur_syscall_num > 0) {
         tasks[id].syscall_num = cur_syscall_num;
         tasks[id].syscall_param = cur_syscall_param;
-        printfmt("syscall_num=%d\r\n", tasks[id].syscall_num);
+        printfmt("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
         switch (tasks[id].syscall_num) {
             case SYSCALL_GET_TASKID:
-                printfmt("Task ID = %d\r\n", tasks[id].id);
+                printfmt("KERNEL: Task ID = %d\r\n", tasks[id].id);
                 ret_val = &tasks[id].id;
                 break;
             case SYSCALL_GET_PRIORITY:
-                printfmt("Priority = %d\r\n", tasks[id].priority);
+                printfmt("KERNEL: Priority = %d\r\n", tasks[id].priority);
                 ret_val = &tasks[id].priority;
                 break;
             default:
-                printfmt("Unsupported syscall num\r\n");
+                printfmt("KERNEL: Unsupported syscall num\r\n");
         }
     }
     tasks[id].status = TASK_READY;
