@@ -3,6 +3,7 @@
 #include "output.h"
 #include "tasks.h"
 #include "syscall.h"
+#include "malloc.h"
 
 /* 72MHz */
 #define CPU_CLOCK_HZ 72000000
@@ -58,6 +59,7 @@ void main(void)
     *SYSTICK_CTRL = 0x07;
 
     printfmt(greet);
+    malloc_init();
     tasks_init();
     proc_id[0] = new_task(proc1, 1);
     printfmt("proc_id[0]=%d\r\n", proc_id[0]);
