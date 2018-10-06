@@ -33,9 +33,11 @@ void* malloc(unsigned int size)
     ptr = &head;
     while (ptr->next) {
         cur_ptr = ptr->next;
-        if (cur_ptr->size > realsize) {
+        if (cur_ptr->size >= realsize) {
             ptr->next = &cur_ptr[realsize];
-            ptr->next->size = cur_ptr->size - realsize;
+            if (cur_ptr->size != realsize) {
+                ptr->next->size = cur_ptr->size - realsize;
+            }
             cur_ptr->size = realsize;
             cur_ptr->next = (struct mHeader *)USED_MAGIC;
             return cur_ptr->start;
@@ -47,4 +49,22 @@ void* malloc(unsigned int size)
 
 void free(void* ptr)
 {
+    struct mHeader *next_ptr;
+    struct mHeader *cur_ptr = &head;
+    struct mHeader *info = (struct mHeader *)ptr;
+    info -= 1;
+    if (info->next != (struct mHeader *)USED_MAGIC)
+        return;
+    while (cur_ptr->next < info) {
+        cur_ptr = cur_ptr->next;
+    }
+    next_ptr = cur_ptr->next;
+    /* Check whether need to combine */
+    if (next_ptr == info + info->size) {
+        info->next = next_ptr->next;
+        info->size += next_ptr->size;
+    } else {
+        info->next = next_ptr;
+    }
+    cur_ptr->next = info;
 }
