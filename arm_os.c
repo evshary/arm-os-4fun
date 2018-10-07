@@ -14,25 +14,29 @@ static char greet[] = "Hi, This is arm-os-4fun!\n";
 
 void proc1(void)
 {
-    int id, priority;
+    int id, priority, exetime;
     printfmt("USER: This is process 1\r\n");
     id = get_taskid();
     printfmt("USER: task id=%d\r\n", id);
     printfmt("USER: Back to process 1\r\n");
     priority = get_priority();
     printfmt("USER: priority=%d\r\n", priority);
+    exetime = get_exetime();
+    printfmt("USER: exetime=%d\r\n", exetime);
     while (1);
 }
 
 void proc2(void)
 {
-    int id, priority;
+    int id, priority, exetime;
     printfmt("USER: This is process 2\r\n");
     id = get_taskid();
     printfmt("USER: task id=%d\r\n", id);
     printfmt("USER: Back to process 2\r\n");
     priority = get_priority();
     printfmt("USER: priority=%d\r\n", priority);
+    exetime = get_exetime();
+    printfmt("USER: exetime=%d\r\n", exetime);
     while (1);
 }
 

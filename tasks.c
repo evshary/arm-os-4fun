@@ -15,6 +15,8 @@ unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 struct task_control_block tasks[USER_PROCESS];
 unsigned char current_task_id;
 
+extern unsigned int uptime;
+
 void tasks_init(void)
 {
     int i;
@@ -95,6 +97,7 @@ void *task_syscall_getretval(void)
 
 void tasks_scheduler(void)
 {
+    unsigned int last_time;
     int i, id;
 
     /* Select available tasks */
@@ -108,8 +111,11 @@ void tasks_scheduler(void)
     printfmt("KERNEL: Now we want to run id=%d\r\n", id);
     tasks[id].status = TASK_RUNNING;
     current_task_id = id;
+    last_time = uptime;
 
     tasks[id].user_stack_ptr = run_proc(tasks[id].user_stack_ptr);
+    printfmt("KERNEL: uptime=%d, last_time=%d\r\n", uptime, last_time);
+    tasks[id].time += uptime - last_time;
     if (tasks[id].syscall_num > 0) {
         printfmt("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
@@ -121,6 +127,10 @@ void tasks_scheduler(void)
             case SYSCALL_GET_PRIORITY:
                 printfmt("KERNEL: Priority = %d\r\n", tasks[id].priority);
                 tasks[id].syscall_retval = &tasks[id].priority;
+                break;
+            case SYSCALL_GET_EXETIME:
+                printfmt("KERNEL: EXETIME = %d\r\n", tasks[id].time);
+                tasks[id].syscall_retval = &tasks[id].time;
                 break;
             default:
                 printfmt("KERNEL: Unsupported syscall num\r\n");

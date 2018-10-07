@@ -11,6 +11,8 @@ extern uint32_t _start_bss;
 extern uint32_t _end_bss;
 extern uint32_t _end_stack;
 
+unsigned int uptime = 0;
+
 void reset_handler(void)
 {
     uint32_t *flash_data_begin = &_flash_start_data;
@@ -58,6 +60,7 @@ void usagefault_handler(void)
 void systick_handler(void)
 {
     *SCB_ICSR |= SCB_ICSR_PENDSVSET;
+    uptime++;
 }
 
 void svc_handler(void);
