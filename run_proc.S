@@ -28,13 +28,15 @@ run_proc:
 .type svc_handler, %function
 .global svc_handler
 /* 
- * For systick and svc, they are both back to kernel. 
+ * For pendsv and svc, they are both back to kernel. 
  * we can put them together.
+ * See https://blog.csdn.net/guozhongwei1/article/details/49544671 
+ * to realize the reason why we should use pendsv.
  */
-.type systick_handler, %function
-.global systick_handler
+.type pendsv_handler, %function
+.global pendsv_handler
 svc_handler:
-systick_handler:
+pendsv_handler:
     /* Now stack is msp, so we can't use push to save register. */
     /* r0 register is necessary, because r0 stands for return value and we should return stack address. */
     mrs r0, psp

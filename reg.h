@@ -4,6 +4,11 @@
 #define __REG_TYPE  volatile uint32_t
 #define __REG       __REG_TYPE *
 
+#define SCS_BASE                        (uint32_t) (0xE000E000)
+#define SCB_BASE                        (SCS_BASE + 0x0D00)
+#define SCB_ICSR                        (volatile uint32_t *) (SCB_BASE + 0x004)
+#define SCB_ICSR_PENDSVSET              (uint32_t) (1 << 28)
+
 /* RCC Memory Map */
 #define RCC     ((__REG_TYPE) 0x40021000)
 #define RCC_CR      ((__REG) (RCC + 0x00))
