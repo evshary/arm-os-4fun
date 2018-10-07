@@ -5,11 +5,12 @@ OBJDUMP = $(CROSS)-objdump
 CFLAGS = -fno-common -ffreestanding \
 		 -Wall -Werror \
 		 -mcpu=cortex-m3 -mthumb \
-		 -Wl,-Tarm_os.ld -nostartfiles
+		 -Wl,-Tarm_os.ld -nostartfiles \
+		 -Iinclude
 
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 
-SRC = start.c arm_os.c run_proc.S output.c tasks.c syscall.c malloc.c
+SRC = start.c arm_os.c run_proc.S output.c tasks.c syscall.c malloc/malloc.c
 
 BINARY = arm_os.bin
 all: style $(BINARY)
