@@ -31,8 +31,10 @@ $(BINARY): $(SRC)
 	$(OBJDUMP) -S arm_os.elf > arm_os.list
 
 clean:
-	rm -rf $(HAL)
 	rm -rf *.bin *.elf *list
+
+distclean: clean
+	rm -rf $(HAL)
 
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
