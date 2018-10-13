@@ -12,8 +12,6 @@ extern uint32_t _start_bss;
 extern uint32_t _end_bss;
 extern uint32_t _end_stack;
 
-unsigned int uptime = 0;
-
 void reset_handler(void)
 {
     uint32_t *flash_data_begin = &_flash_start_data;
@@ -58,14 +56,9 @@ void usagefault_handler(void)
     while (1);
 }
 
-void systick_handler(void)
-{
-    *SCB_ICSR |= SCB_ICSR_PENDSVSET;
-    uptime++;
-}
-
 void svc_handler(void);
 void pendsv_handler(void);
+void systick_handler(void);
 
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
@@ -86,16 +79,3 @@ uint32_t *isr_vectors[] = {
     (uint32_t *) pendsv_handler,     /* pendsv handler */
     (uint32_t *) systick_handler     /* systick handler */
 };
-
-/* 72MHz */
-#define CPU_CLOCK_HZ 72000000
-/* 100 ms per tick. */
-#define TICK_RATE_HZ 10
-
-void systick_init(void)
-{
-    /* SysTick configuration */
-    *SYSTICK_LOAD = (CPU_CLOCK_HZ / TICK_RATE_HZ) - 1UL;
-    *SYSTICK_VAL = 0;
-    *SYSTICK_CTRL = 0x07;
-}

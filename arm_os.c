@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "reg.h"
 #include "uart.h"
+#include "systick.h"
 #include "output.h"
 #include "tasks.h"
 #include "syscall.h"
@@ -36,7 +37,6 @@ void proc2(void)
     while (1);
 }
 
-void systick_init(void);
 void main(void)
 {
     int proc_id[USER_PROCESS];
