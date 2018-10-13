@@ -1,15 +1,7 @@
 #include <stdint.h>
 #include <stdarg.h>
+#include "uart.h"
 #include "output.h"
-#include "reg.h"
-
-#define USART_FLAG_TXE  ((uint16_t) 0x0080)
-
-void print_char(char ch)
-{
-    while (!(*(USART2_SR) & USART_FLAG_TXE));
-    *(USART2_DR) = (ch & 0xFF);
-}
 
 void print_str(const char *str)
 {
@@ -86,13 +78,4 @@ void print_stack(unsigned int *stack, int size)
             printfmt("\r\n");
     }
     printfmt("\r\n");
-}
-
-void print_reg(void)
-{
-    register uint32_t reg_value;
-    __asm__ volatile("mov %0, lr\n" : "=r"(reg_value));
-    printfmt("lr=%x\r\n", reg_value);
-    __asm__ volatile("mrs r0,control\nmov %0, r0\n" : "=r"(reg_value));
-    printfmt("control=%x\r\n", reg_value);
 }

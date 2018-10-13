@@ -13,7 +13,9 @@ SVN_REV = 104397
 
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 
-SRC = start.c arm_os.c run_proc.S output.c tasks.c syscall.c malloc/malloc.c
+SRC = arm_os.c run_proc.S tasks.c syscall.c output.c malloc/malloc.c
+
+include platform/stm32p103/stm32p103.mk
 
 BINARY = arm_os.bin
 all: extern style $(BINARY)

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "reg.h"
+#include "uart.h"
 #include "output.h"
 
 extern void main(void);
@@ -85,3 +86,16 @@ uint32_t *isr_vectors[] = {
     (uint32_t *) pendsv_handler,     /* pendsv handler */
     (uint32_t *) systick_handler     /* systick handler */
 };
+
+/* 72MHz */
+#define CPU_CLOCK_HZ 72000000
+/* 100 ms per tick. */
+#define TICK_RATE_HZ 10
+
+void systick_init(void)
+{
+    /* SysTick configuration */
+    *SYSTICK_LOAD = (CPU_CLOCK_HZ / TICK_RATE_HZ) - 1UL;
+    *SYSTICK_VAL = 0;
+    *SYSTICK_CTRL = 0x07;
+}

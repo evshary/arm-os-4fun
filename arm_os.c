@@ -1,14 +1,10 @@
 #include <stdint.h>
 #include "reg.h"
+#include "uart.h"
 #include "output.h"
 #include "tasks.h"
 #include "syscall.h"
 #include "malloc.h"
-
-/* 72MHz */
-#define CPU_CLOCK_HZ 72000000
-/* 100 ms per tick. */
-#define TICK_RATE_HZ 10
 
 static char greet[] = "Hi, This is arm-os-4fun!\n";
 
@@ -40,27 +36,13 @@ void proc2(void)
     while (1);
 }
 
+void systick_init(void);
 void main(void)
 {
     int proc_id[USER_PROCESS];
-    *(RCC_APB2ENR) |= (uint32_t)(0x00000001 | 0x00000004);
-    *(RCC_APB1ENR) |= (uint32_t)(0x00020000);
 
-    *(GPIOA_CRL) = 0x00004B00;
-    *(GPIOA_CRH) = 0x44444444;
-    *(GPIOA_ODR) = 0x00000000;
-    *(GPIOA_BSRR) = 0x00000000;
-    *(GPIOA_BRR) = 0x00000000;
-
-    *(USART2_CR1) = 0x0000000C;
-    *(USART2_CR2) = 0x00000000;
-    *(USART2_CR3) = 0x00000000;
-    *(USART2_CR1) |= 0x2000;
-
-    /* SysTick configuration */
-    *SYSTICK_LOAD = (CPU_CLOCK_HZ / TICK_RATE_HZ) - 1UL;
-    *SYSTICK_VAL = 0;
-    *SYSTICK_CTRL = 0x07;
+    uart_init();
+    systick_init();
 
     printfmt(greet);
     malloc_init();
