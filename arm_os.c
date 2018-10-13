@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include "reg.h"
 #include "uart.h"
 #include "systick.h"
 #include "output.h"
