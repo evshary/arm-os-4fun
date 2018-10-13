@@ -2,26 +2,32 @@ CROSS = arm-none-eabi
 CC = $(CROSS)-gcc
 OBJCOPY = $(CROSS)-objcopy
 OBJDUMP = $(CROSS)-objdump
+QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
+# For extern project
+EXTERN = extern
+HAL = $(EXTERN)/hal
+SVN_REV = 104397
+# Compile option
 CFLAGS = -fno-common -ffreestanding \
 		 -Wall -Werror \
 		 -mcpu=cortex-m3 -mthumb \
 		 -Wl,-Tarm_os.ld -nostartfiles \
 		 -Iinclude
-EXTERN = extern
-HAL = $(EXTERN)/hal
-SVN_REV = 104397
-
-QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
-
+# Source Code
 SRC = arm_os.c run_proc.S tasks.c syscall.c output.c malloc/malloc.c
 
-include platform/stm32p103/stm32p103.mk
+# Choose board
+BOARD ?= STM32P103
+ifeq ($(BOARD), STM32P103)
+	include platform/stm32p103/stm32p103.mk
+else
+	include platform/stm32p103/stm32p103.mk
+endif
 
 BINARY = arm_os.bin
 all: extern style $(BINARY)
 
 extern: $(HAL)
-
 $(HAL):
 	mkdir -p $(HAL)
 	svn export -r$(SVN_REV) -q --force https://github.com/ARMmbed/mbed-os/trunk/cmsis/ $(HAL)/cmsis
