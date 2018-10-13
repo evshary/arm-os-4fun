@@ -2,12 +2,10 @@
 #include "output.h"
 #include "reg.h"
 
-#define USART_FLAG_TXE  ((uint16_t) 0x0080)
-
 void print_char(char ch)
 {
-    while (!(*(USART2_SR) & USART_FLAG_TXE));
-    *(USART2_DR) = (ch & 0xFF);
+    while (!(USART2->SR & USART_SR_TXE));
+    USART2->DR = (ch & 0xFF);
 }
 
 void print_reg(void)
@@ -21,17 +19,18 @@ void print_reg(void)
 
 void uart_init(void)
 {
-    *(RCC_APB2ENR) |= (uint32_t)(0x00000001 | 0x00000004);
-    *(RCC_APB1ENR) |= (uint32_t)(0x00020000);
+    RCC->APB2ENR |= (uint32_t)(0x00000001 | 0x00000004);
+    RCC->APB1ENR |= (uint32_t)(0x00020000);
 
-    *(GPIOA_CRL) = 0x00004B00;
-    *(GPIOA_CRH) = 0x44444444;
-    *(GPIOA_ODR) = 0x00000000;
-    *(GPIOA_BSRR) = 0x00000000;
-    *(GPIOA_BRR) = 0x00000000;
+    /* USART2 Configuration, Rx->PA3, Tx->PA2 */
+    GPIOA->CRL = 0x00004B00;
+    GPIOA->CRH = 0x44444444;
+    GPIOA->ODR = 0x00000000;
+    GPIOA->BSRR = 0x00000000;
+    GPIOA->BRR = 0x00000000;
 
-    *(USART2_CR1) = 0x0000000C;
-    *(USART2_CR2) = 0x00000000;
-    *(USART2_CR3) = 0x00000000;
-    *(USART2_CR1) |= 0x2000;
+    USART2->CR1 = 0x0000000C;
+    USART2->CR2 = 0x00000000;
+    USART2->CR3 = 0x00000000;
+    USART2->CR1 |= 0x2000;
 }

@@ -12,7 +12,7 @@ CFLAGS = -fno-common -ffreestanding \
 		 -Wall -Werror \
 		 -mcpu=cortex-m3 -mthumb \
 		 -Wl,-Tarm_os.ld -nostartfiles \
-		 -Iinclude
+		 -Iinclude -I.
 # Source Code
 SRC = arm_os.c run_proc.S tasks.c syscall.c output.c malloc/malloc.c
 
