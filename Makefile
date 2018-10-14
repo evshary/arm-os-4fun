@@ -3,6 +3,7 @@ CC = $(CROSS)-gcc
 OBJCOPY = $(CROSS)-objcopy
 OBJDUMP = $(CROSS)-objdump
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
+ST_FLASH = ../stlink/st-flash
 # For extern project
 EXTERN = extern
 HAL = $(EXTERN)/hal
@@ -47,6 +48,9 @@ distclean: clean
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
 	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin
+
+flash:
+	$(ST_FLASH) write $(BINARY) 0x8000000
 
 style:
 	astyle --style=linux --exclude=$(EXTERN) -cnpswHUSR *.c,*.h
