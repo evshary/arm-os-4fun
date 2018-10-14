@@ -6,6 +6,7 @@ We can learn OS concept and ARM architecture by creating the OS.
 Some of the functions are from jserv's [mini-arm-os](https://github.com/jserv/mini-arm-os).
 
 # Build Environment
+## QEMU
 1. Install necessary package.
 ```
 sudo apt-get install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixman-1-dev bison flex
@@ -25,15 +26,37 @@ cd qemu_stm32
     --disable-gtk
 make
 ```
-3. clone the source code
+3. clone the source code.
 ```
 git clone https://github.com/evshary/arm-os-4fun.git
 ```
-4. Build and run
+4. Build and run.
 ```
 cd arm-os-4fun
 make
 make qemu
+```
+## STM32F4
+1. Install necessary package.
+```
+sudo apt-get install cmake libtool libusb-1.0-0-dev libgtk-3-dev
+```
+2. Clone stlink and build.
+```
+git clone http://github.com/texane/stlink.git
+cd stlink
+cmake .
+make
+```
+3. clone the source code.
+```
+git clone https://github.com/evshary/arm-os-4fun.git
+```
+4. Build and run.
+```
+cd arm-os-4fun
+make BOARD=STM32F407
+make flash
 ```
 
 # System
