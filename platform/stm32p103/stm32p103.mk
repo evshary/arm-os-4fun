@@ -1,11 +1,13 @@
 CUR_DIR = platform/stm32p103
 
+CPU = cortex-m3
+
 SRC += $(CUR_DIR)/start.c \
 	   $(CUR_DIR)/uart.c \
 	   $(CUR_DIR)/systick.c
 
 CFLAGS += \
-    -Iplatform/stm32p103 \
+    -I$(CUR_DIR) \
     -I$(HAL)/util \
     -I$(HAL)/cmsis \
     -I$(HAL)/cmsis/TARGET_CORTEX_M \
