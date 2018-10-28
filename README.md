@@ -14,6 +14,8 @@ sudo apt-get install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixma
 sudo apt-get install lib32gcc1 lib32ncurses5
 # Install cross compiler
 sudo apt-get install binutils-arm-none-eabi libnewlib-arm-none-eabi gcc-arm-none-eabi
+# install gdb
+sudo apt-get install gdb-multiarch
 ```
 2. We run the environment on qemu, so you should build the qemu first.
 ```
@@ -35,6 +37,13 @@ git clone https://github.com/evshary/arm-os-4fun.git
 cd arm-os-4fun
 make
 make qemu
+```
+5. If you want to run gdb
+```
+cd arm-os-4fun
+make DEBUG=1
+make qemu_gdb
+make qemu_connect
 ```
 ## STM32F4
 1. Install necessary package.
