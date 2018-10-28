@@ -29,6 +29,13 @@ else
 	include platform/stm32p103/stm32p103.mk
 endif
 
+# DEBUG mode or not
+# Use DWARF format and level 3
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+CFLAGS += -gdwarf-2 -g3
+endif
+
 BINARY = arm_os.bin
 all: extern style $(BINARY)
 
@@ -52,6 +59,13 @@ distclean: clean
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
 	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin
+
+qemu_gdb:
+	echo "Open another terminal,and type \"make qeme_connect\""
+	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin -s -S
+
+qemu_connect:
+	gdb-multiarch arm_os.elf -ex "target remote:1234"
 
 flash:
 	$(ST_FLASH) write $(BINARY) 0x8000000
