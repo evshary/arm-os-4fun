@@ -4,6 +4,7 @@ OBJCOPY = $(CROSS)-objcopy
 OBJDUMP = $(CROSS)-objdump
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 ST_FLASH = ../stlink/st-flash
+GDB = gdb-multiarch
 # For extern project
 EXTERN = extern
 HAL = $(EXTERN)/hal
@@ -36,8 +37,11 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -gdwarf-2 -g3
 endif
 
-BINARY = arm_os.bin
-all: extern style $(BINARY)
+# OS name
+OS_NAME = arm_os
+OS_BINARY = $(OS_NAME).bin
+OS_ELF = $(OS_NAME).elf
+all: extern style $(OS_BINARY)
 
 extern: $(HAL)
 $(HAL):
@@ -45,10 +49,10 @@ $(HAL):
 	svn export -r$(SVN_REV) -q --force https://github.com/ARMmbed/mbed-os/trunk/cmsis/ $(HAL)/cmsis
 	svn export -r$(SVN_REV) -q --force https://github.com/ARMmbed/mbed-os/trunk/targets/TARGET_STM/ $(HAL)/TARGET_STM
 
-$(BINARY): $(SRC)
-	$(CC) $(CFLAGS) $^ -o arm_os.elf
-	$(OBJCOPY) -Obinary arm_os.elf arm_os.bin
-	$(OBJDUMP) -S arm_os.elf > arm_os.list
+$(OS_BINARY): $(SRC)
+	$(CC) $(CFLAGS) $^ -o $(OS_ELF)
+	$(OBJCOPY) -Obinary $(OS_ELF) $(OS_BINARY)
+	$(OBJDUMP) -S $(OS_ELF) > $(OS_NAME).list
 
 clean:
 	rm -rf *.bin *.elf *list
@@ -58,17 +62,17 @@ distclean: clean
 
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
-	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin
+	$(QEMU) -M stm32-p103 -nographic -kernel $(OS_BINARY)
 
 qemu_gdb:
 	echo "Open another terminal,and type \"make qeme_connect\""
-	$(QEMU) -M stm32-p103 -nographic -kernel arm_os.bin -s -S
+	$(QEMU) -M stm32-p103 -nographic -kernel $(OS_BINARY) -s -S
 
 qemu_connect:
-	gdb-multiarch arm_os.elf -ex "target remote:1234"
+	$(GDB) $(OS_ELF) -ex "target remote:1234"
 
 flash:
-	$(ST_FLASH) write $(BINARY) 0x8000000
+	$(ST_FLASH) write $(OS_BINARY) 0x8000000
 
 style:
 	astyle --style=linux --exclude=$(EXTERN) -cnpswHUSR *.c,*.h
