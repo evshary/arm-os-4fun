@@ -8,6 +8,16 @@ void print_char(char ch)
     USART2->DR = (ch & 0xFF);
 }
 
+int read_char(char *ch)
+{
+    if (USART2->SR & USART_SR_RXNE) {
+        *ch = USART2->DR;
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 void print_reg(void)
 {
     register uint32_t reg_value;
