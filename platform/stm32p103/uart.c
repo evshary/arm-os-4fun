@@ -42,5 +42,6 @@ void uart_init(void)
     USART2->CR1 = 0x0000000C;
     USART2->CR2 = 0x00000000;
     USART2->CR3 = 0x00000000;
-    USART2->CR1 |= 0x2000;
+    USART2->CR1 |= USART_CR1_UE; /* 0x2000 */
+    //USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_UE; /* 0x0020 | 0x2000 */
 }
