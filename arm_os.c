@@ -11,7 +11,6 @@ static char greet[] = "Hi, This is arm-os-4fun!\n";
 void proc1(void)
 {
     int id, priority, exetime;
-    char ch;
     printfmt("USER: This is process 1\r\n");
     id = get_taskid();
     printfmt("USER: task id=%d\r\n", id);
@@ -21,10 +20,6 @@ void proc1(void)
     exetime = get_exetime();
     printfmt("USER: exetime=%d\r\n", exetime);
 
-    while (1) {
-        if (read_char(&ch) == 0)
-            print_char(ch);
-    }
     while (1);
 }
 
