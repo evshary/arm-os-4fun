@@ -60,6 +60,14 @@ void svc_handler(void);
 void pendsv_handler(void);
 void systick_handler(void);
 
+void USART2_IRQHandler()
+{
+    char ch;
+    if (read_char(&ch) != -1) {
+        print_char(ch);
+    }
+}
+
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
     (uint32_t *) &_end_stack,        /* stack pointer */
@@ -69,13 +77,52 @@ uint32_t *isr_vectors[] = {
     (uint32_t *) memfault_handler,   /* memory fault handler */
     (uint32_t *) busfault_handler,   /* bus fault handler */
     (uint32_t *) usagefault_handler, /* usage fault handler */
-    0,
-    0,
-    0,
-    0,
+    0,                               /* Reserved */
+    0,                               /* Reserved */
+    0,                               /* Reserved */
+    0,                               /* Reserved */
     (uint32_t *) svc_handler,        /* SVC handler */
-    0,
-    0,
+    0,                               /* Debug Monitor */
+    0,                               /* Reserved */
     (uint32_t *) pendsv_handler,     /* pendsv handler */
-    (uint32_t *) systick_handler     /* systick handler */
+    (uint32_t *) systick_handler,    /* systick handler */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    0,                               /* Unused */
+    (uint32_t *) USART2_IRQHandler   /* USART2 handler */
 };
