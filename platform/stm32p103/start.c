@@ -60,11 +60,13 @@ void svc_handler(void);
 void pendsv_handler(void);
 void systick_handler(void);
 
+// TODO: for test now
+char tmp_ch;
 void USART2_IRQHandler()
 {
     char ch;
     if (read_char(&ch) != -1) {
-        print_char(ch);
+        tmp_ch = ch;
     }
 }
 

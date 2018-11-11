@@ -20,7 +20,11 @@ void proc1(void)
     exetime = get_exetime();
     printfmt("USER: exetime=%d\r\n", exetime);
 
-    while (1);
+    while (1) {
+        char buf[10];
+        int ret = read(buf, 10);
+        printfmt("buf[0]=%c ret=%d\r\n", buf[0], ret);
+    }
 }
 
 void proc2(void)

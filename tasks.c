@@ -132,6 +132,15 @@ void tasks_scheduler(void)
                 printfmt("KERNEL: EXETIME = %d\r\n", tasks[id].time);
                 tasks[id].syscall_retval = &tasks[id].time;
                 break;
+            case SYSCALL_READ: {
+                struct buf_struct *buf_ptr = tasks[id].syscall_param;
+                extern char tmp_ch;
+                printfmt("KERNEL: READ buf=%x len=%d\r\n", buf_ptr->buf, buf_ptr->len);
+                /* get data from USART2 */
+                buf_ptr->buf[0] = tmp_ch;
+                tasks[id].syscall_retval = (void *)1;
+                break;
+            }
             default:
                 printfmt("KERNEL: Unsupported syscall num\r\n");
         }

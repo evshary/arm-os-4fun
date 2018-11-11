@@ -37,3 +37,19 @@ int get_exetime(void)
     ret_val = task_syscall_getretval();
     return *((int *)ret_val);
 }
+
+int read(char *buf, int len)
+{
+    int ret_val;
+    struct buf_struct buf_ptr;
+    buf_ptr.buf = buf;
+    buf_ptr.len = len;
+
+    task_syscall_setparam(SYSCALL_READ, &buf_ptr);
+    __asm__
+    (
+        "svc 0"
+    );
+    ret_val = (int)task_syscall_getretval();
+    return ret_val;
+}
