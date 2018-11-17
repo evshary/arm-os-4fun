@@ -118,6 +118,9 @@ void svc_handler(void);
 void pendsv_handler(void);
 void systick_handler(void);
 
+// TODO: for test now
+char tmp_ch;
+
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
     (uint32_t *) &_end_stack,        /* stack pointer */
