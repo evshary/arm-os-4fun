@@ -12,6 +12,63 @@ extern uint32_t _start_bss;
 extern uint32_t _end_bss;
 extern uint32_t _end_stack;
 
+void rcc_clock_init(void)
+{
+    /* Configure the System clock frequency, HCLK, PCLK2 and PCLK1 prescalers */
+    /* Configure the Flash Latency cycles and enable prefetch buffer */
+    volatile uint32_t StartUpCounter = 0, HSEStatus = 0;
+
+    /* SYSCLK, HCLK, PCLK2 and PCLK1 configuration ---------------------------*/
+    /* Enable HSE */
+    RCC->CR |= RCC_CR_HSEON;
+
+
+    /* Wait till HSE is ready and if Time out is reached exit */
+    do {
+        HSEStatus = RCC->CR & RCC_CR_HSERDY;
+        StartUpCounter++;
+    } while ((HSEStatus == 0) && (StartUpCounter != HSE_STARTUP_TIMEOUT));
+
+
+    if ((RCC->CR & RCC_CR_HSERDY) != 0) {
+        HSEStatus = (uint32_t) 0x01;
+    } else {
+        HSEStatus = (uint32_t) 0x00;
+    }
+
+    if (HSEStatus == (uint32_t) 0x01) {
+        /* Enable Prefetch Buffer */
+        FLASH->ACR |= FLASH_ACR_PRFTEN;
+
+        /* Flash clear wait state */
+        FLASH->ACR &= ~FLASH_ACR_LATENCY;
+
+        /* Flash 0 latency*/
+        FLASH->ACR |= FLASH_ACR_LATENCY_0WS;
+
+        /* HCLK = SYSCLK */
+        RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
+
+        /* PCLK2 = HCLK */
+        RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
+
+        /* PCLK1 = HCLK */
+        RCC->CFGR |= RCC_CFGR_PPRE1_DIV1;
+
+        /* Select HSE as system clock source */
+        RCC->CFGR &= ~RCC_CFGR_SW;
+        RCC->CFGR |= RCC_CFGR_SW_HSE;
+
+        /* Wait till HSE is used as system clock source */
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {
+            /*busy waiting*/
+        }
+    } else {
+        /* If HSE fails to start-up, the application will have wrong clock
+        configuration. User can add here some code to deal with this error */
+    }
+}
+
 void reset_handler(void)
 {
     uint32_t *flash_data_begin = &_flash_start_data;
@@ -23,6 +80,7 @@ void reset_handler(void)
     uint32_t *bss_end = &_end_bss;
     while (bss_begin < bss_end) *bss_begin++ = 0;
 
+    rcc_clock_init();
     main();
 }
 
