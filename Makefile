@@ -62,6 +62,19 @@ clean:
 distclean: clean
 	rm -rf $(HAL)
 
+st-flash: $(OS_BINARY)
+	../stlink/st-flash --reset write $(OS_BINARY) 0x8000000
+
+st-erase:
+	st-flash erase
+
+st-util_gdb:
+	echo "Open another terminal and type \"make st-util_connect\""
+	../stlink/src/gdbserver/st-util
+
+st-util_connect: $(OS_ELF)
+	$(GDB) $^ -ex "target remote:4242"
+
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
 	$(QEMU) -M stm32-p103 -nographic -kernel $(OS_BINARY)
