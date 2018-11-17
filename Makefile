@@ -26,6 +26,8 @@ ifeq ($(BOARD), STM32P103)
 	include platform/stm32p103/stm32p103.mk
 else ifeq ($(BOARD), STM32F407)
 	include platform/stm32f407/stm32f407.mk
+else ifeq ($(BOARD), STM32F429)
+	include platform/stm32f429/stm32f429.mk
 else
 	include platform/stm32p103/stm32p103.mk
 endif
@@ -59,6 +61,19 @@ clean:
 
 distclean: clean
 	rm -rf $(HAL)
+
+st-flash: $(OS_BINARY)
+	../stlink/st-flash --reset write $(OS_BINARY) 0x8000000
+
+st-erase:
+	st-flash erase
+
+st-util_gdb:
+	echo "Open another terminal and type \"make st-util_connect\""
+	../stlink/src/gdbserver/st-util
+
+st-util_connect: $(OS_ELF)
+	$(GDB) $^ -ex "target remote:4242"
 
 qemu:
 	echo "Press Ctrl-A and then X to exit QEMU"
