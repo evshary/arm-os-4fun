@@ -26,6 +26,8 @@ ifeq ($(BOARD), STM32P103)
 	include platform/stm32p103/stm32p103.mk
 else ifeq ($(BOARD), STM32F407)
 	include platform/stm32f407/stm32f407.mk
+else ifeq ($(BOARD), STM32F429)
+	include platform/stm32f429/stm32f429.mk
 else
 	include platform/stm32p103/stm32p103.mk
 endif
