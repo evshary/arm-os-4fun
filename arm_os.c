@@ -6,7 +6,7 @@
 #include "syscall.h"
 #include "malloc.h"
 
-static char greet[] = "Hi, This is arm-os-4fun!\n";
+static char greet[] = "Hi, This is arm-os-4fun!\r\n";
 
 void proc1(void)
 {
