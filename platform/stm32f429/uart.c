@@ -41,10 +41,8 @@ static void RCC_GetClocksFreq(RCC_ClocksTypeDef* RCC_Clocks)
             RCC_Clocks->SYSCLK_Frequency = HSE_VALUE;
             break;
         case 0x08:  /* PLL used as system clock  source */
-
             /* PLL_VCO = (HSE_VALUE or HSI_VALUE / PLLM) * PLLN
-               SYSCLK = PLL_VCO / PLLP
-               */
+               SYSCLK = PLL_VCO / PLLP */
             pllsource = (RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC) >> 22;
             pllm = RCC->PLLCFGR & RCC_PLLCFGR_PLLM;
 
@@ -86,8 +84,6 @@ static void RCC_GetClocksFreq(RCC_ClocksTypeDef* RCC_Clocks)
     /* PCLK2 clock frequency */
     RCC_Clocks->PCLK2_Frequency = RCC_Clocks->HCLK_Frequency >> presc;
 }
-
-
 
 /* Calculates the value for the USART_BRR */
 static uint16_t usart_baud_calc(uint32_t base, USART_TypeDef *USARTx, uint32_t baudrate)
@@ -132,8 +128,6 @@ static uint16_t usart_baud_calc(uint32_t base, USART_TypeDef *USARTx, uint32_t b
     return (uint16_t)tmpreg;
 }
 
-
-
 /*
  * USART1:APB2ENR;  GPIOA:AHB1
  */
@@ -142,8 +136,6 @@ static void enableUartPeripheralCLOCK(void)
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 }
-
-
 
 #define GPIO_PUPDR_M(n)                 (uint32_t) (0x3 << (2*n))          /* Pin mask */
 #define GPIO_PUPDR_PIN(n)               (uint32_t) (2*n)                   /* Pin bitshift */
@@ -159,40 +151,28 @@ static void enableGPIO(void)
     uint8_t pin_tx = 9;  /*Tx=PA9*/
     uint8_t pin_rx = 10; /*Rx=PA10*/
 
-    /*
-     * Set to be non Push-pull
-     */
+    /* Set to be non Push-pull */
     uint32_t mode = GPIO_PUPDR_NONE;
     GPIOA->PUPDR &= ~(GPIO_PUPDR_M(pin_tx));
     GPIOA->PUPDR |= (mode << GPIO_PUPDR_PIN(pin_tx));
     GPIOA->PUPDR &= ~(GPIO_PUPDR_M(pin_rx));
     GPIOA->PUPDR |= (mode << GPIO_PUPDR_PIN(pin_rx));
 
-
-    /*
-     * Mode type
-     * Set to be alternative function
-     */
+    /* Mode type: Set to be alternative function */
     uint32_t type = GPIO_MODER_ALT;
     GPIOA->MODER &= ~(GPIO_MODER_M(pin_tx));
     GPIOA->MODER |= (type << GPIO_MODER_PIN(pin_tx));
     GPIOA->MODER &= ~(GPIO_MODER_M(pin_rx));
     GPIOA->MODER |= (type << GPIO_MODER_PIN(pin_rx));
 
-
-    /*
-     * For Alternative-Function,assign AF
-     * USART1/2/3 are all AF7
-     */
+    /* For Alternative-Function, assign AF
+     * USART1/2/3 are all AF7 */
     GPIOA->AFR[1] &= ~0xF0; /* Pin 9,tx */
     GPIOA->AFR[1] |= (0x7 << 4);
     GPIOA->AFR[1] &= ~0xF00; /* Pin 10,rx */
     GPIOA->AFR[1] |= (0x7 << 8);
 
-
-    /*
-     * GPIO output type
-     */
+    /* GPIO output type */
 #define GPIO_OTYPER_M(n)                (uint32_t) (1 << n)                  /* Pin mask */
 #define GPIO_OTYPER_PIN(n)              (uint32_t) (n)                       /* Pin bitshift */
 #define GPIO_OTYPER_OUTPUT_PUSHPULL     0                                    /* Push Pull */
@@ -201,10 +181,7 @@ static void enableGPIO(void)
     GPIOA->OTYPER &= ~GPIO_OTYPER_M(pin_rx);
     GPIOA->OTYPER |= (GPIO_OTYPER_OUTPUT_PUSHPULL << GPIO_OTYPER_PIN(pin_rx));
 
-
-    /*
-     * GPIO speed
-     */
+    /* GPIO speed */
 #define GPIO_OSPEEDR_M(n)               (uint32_t) (0x3 << (2*n))           /* Pin mask */
 #define GPIO_OSPEEDR_PIN(n)             (uint32_t) (2*n)                    /* Pin bitshift */
 #define GPIO_OSPEEDR_50M                (uint32_t) (0x2)                    /* Output speed 50MHz */
@@ -213,56 +190,33 @@ static void enableGPIO(void)
     GPIOA->OSPEEDR |= (speed << GPIO_OSPEEDR_PIN(pin_tx));
     GPIOA->OSPEEDR &= ~(GPIO_OSPEEDR_M(pin_rx));
     GPIOA->OSPEEDR |= (speed << GPIO_OSPEEDR_PIN(pin_rx));
-
-
 }
 
 static void enableUART(void)
 {
     /*******************************___CR2___********************************/
-    /*
-     * 00 = 1 stop-bit
-     */
+    /* 1 Stop bit */
     USART1->CR2 &= ~USART_CR2_STOP;
 
     /*******************************___CR1___********************************/
-    /*
-     * Word Length : 8 Data bits
-     */
+    /* 8 Data bits */
     USART1->CR1 &= ~USART_CR1_M;
-
-    /*
-     * Parity bit NO
-     */
+    /* No parity */
     USART1->CR1 &= ~USART_CR1_PCE;
-
-    /*
-     * USART Mode
-     */
+    /* USART Mode */
     USART1->CR1 |= (USART_CR1_RE | USART_CR1_TE);
 
-
     /*******************************___CR3___********************************/
-    /*
-     * Flow Control don't need
-     */
+    /* No flow control */
     USART1->CR3 &= ~USART_CR3_RTSE; /* disable RTS flow control */
     USART1->CR3 &= ~USART_CR3_CTSE; /* disable CTS flow control */
 
-
     /*******************************___BRR___********************************/
-    /*
-     * Set baud-rate
-     */
+    /* Set baudrate */
     USART1->BRR = usart_baud_calc(USART1_BASE, USART1, 115200);
-
-    /*
-     * Enable USART
-     */
+    /* Enable USART */
     USART1->CR1 |= USART_CR1_UE;
 }
-
-
 
 /*
  * USART1: Tx=PA9 , Rx=PA10

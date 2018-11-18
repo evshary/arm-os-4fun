@@ -18,8 +18,7 @@ void rcc_clock_init(void)
     /* Configure the Flash Latency cycles and enable prefetch buffer */
     volatile uint32_t StartUpCounter = 0, HSEStatus = 0;
 
-    /* SYSCLK, HCLK, PCLK2 and PCLK1 configuration ---------------------------*/
-    /* Enable HSE */
+    /* Enable HSE(External high-speed clock enable) */
     RCC->CR |= RCC_CR_HSEON;
 
 
@@ -39,19 +38,18 @@ void rcc_clock_init(void)
     if (HSEStatus == (uint32_t) 0x01) {
         /* Enable Prefetch Buffer */
         FLASH->ACR |= FLASH_ACR_PRFTEN;
-
         /* Flash clear wait state */
         FLASH->ACR &= ~FLASH_ACR_LATENCY;
-
         /* Flash 0 latency*/
         FLASH->ACR |= FLASH_ACR_LATENCY_0WS;
 
+        /* AHB prescaler */
         /* HCLK = SYSCLK */
         RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
-
+        /* APB high-speed prescalar */
         /* PCLK2 = HCLK */
         RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
-
+        /* APB low-speed prescalar */
         /* PCLK1 = HCLK */
         RCC->CFGR |= RCC_CFGR_PPRE1_DIV1;
 
