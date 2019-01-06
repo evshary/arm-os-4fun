@@ -43,6 +43,7 @@ make qemu
 cd arm-os-4fun
 make DEBUG=1
 make qemu_gdb
+# run in different terminal
 make qemu_connect
 ```
 ## STM32F4
@@ -67,10 +68,22 @@ cd arm-os-4fun
 make BOARD=STM32F407
 make flash
 ```
+5. If you want to run gdb
+```
+cd arm-os-4fun
+make DEBUG=1 BOARD=STM32F429
+make DEBUG=1 BOARD=STM32F429 debug
+make st-util_gdb
+# run in different terminal
+make st-util_connect
+```
 
 # System
-Currently, the OS runs on qemu, which emulates [STM32-P103](https://www.olimex.com/Products/ARM/ST/STM32-P103/). The supported CPU is stm32f103, which is ARM Cortex M3.
-Therefore, you can reference the data below.
+arm-os-4fun now can run on qemu, which emulates [STM32-P103](https://www.olimex.com/Products/ARM/ST/STM32-P103/). The supported CPU is stm32f103, which is ARM Cortex M3.
+
+The OS also supports [STM32F429I](https://www.st.com/en/evaluation-tools/32f429idiscovery.html), which is ARM Cortex M4.
+
+You can reference the link below.
 
 * [The Definitive Guide to ARM® Cortex®-M3 and Cortex®-M4 Processors](https://www.amazon.com/Definitive-Guide-Cortex%C2%AE-M3-Cortex%C2%AE-M4-Processors/dp/0124080820)
 * [RM0008 Reference manual for STM32F10xxx/20xxx/21xxx/L1xxxx](https://www.st.com/content/ccc/resource/technical/document/reference_manual/59/b9/ba/7f/11/af/43/d5/CD00171190.pdf/files/CD00171190.pdf/jcr:content/translations/en.CD00171190.pdf)
