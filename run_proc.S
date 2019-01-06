@@ -1,13 +1,13 @@
 .thumb
 .syntax unified
 
-.global run_proc 
-run_proc:
-    /* Save psr to r12 and push to stack, msp */
+.global switch_to_handler
+switch_to_handler:
+    /* Save psr to r12 and save kernel's register to stack(msp) */
     mrs r12, psr
     push {r4-r12, lr}
-    
-    /* put param1 to psp and jump to user mode */
+
+    /* Switch to unprivileged thread mode. */
     msr psp, r0
     mov r0, #3
     msr control, r0
@@ -16,8 +16,23 @@ run_proc:
     /* ref: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHFJCAC.html */
     isb
 
-    /* pop the register and process address from psp */
-    pop {r4-r11, lr}
+    /* Switch to handler mode */
+    svc 0
+
+    bx lr
+
+.global run_proc 
+run_proc:
+    /* Save psr to r12 and save kernel's register to stack(msp) */
+    mrs r12, psr
+    push {r4-r12, lr}
+    
+    /* Load saved register from user task */
+    ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}
+    /* Setup psp */
+    msr psp, r0
+
+    /* Use EXC_RETURN to jump to user task */
     bx lr
 
 /* 

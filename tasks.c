@@ -10,6 +10,7 @@
 #define STACK_SIZE 512
 
 unsigned int *run_proc(unsigned int *stack);
+unsigned int *switch_to_handler(unsigned int *stack);
 
 unsigned int user_stack[USER_PROCESS][STACK_SIZE];
 struct task_control_block tasks[USER_PROCESS];
@@ -20,6 +21,15 @@ extern unsigned int uptime;
 void tasks_init(void)
 {
     int i;
+    unsigned int empty_stack[32];
+
+    /* We use empty stack to switch CPU mode to handler mode.
+     * The reason we need to switch to handler mode is that
+     * ARM CM3/4 is unable to use EXC_RETURN in thread mode.
+     * Ref1: https://github.com/jserv/mini-arm-os/issues/27
+     * Ref2: https://www.ptt.cc/bbs/ASM/M.1534260340.A.DC5.html
+     */
+    switch_to_handler(&empty_stack[32]);
     for (i = 0; i < USER_PROCESS; i++) {
         tasks[i].id = 0;
         tasks[i].status = TASK_NONE;
