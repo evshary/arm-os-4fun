@@ -9,6 +9,13 @@
 
 #define STACK_SIZE 512
 
+#define TASK_DEBUG 0
+#if TASK_DEBUG
+#define TASK_DBG printfmt
+#else
+#define TASK_DBG(...)
+#endif
+
 unsigned int *run_proc(unsigned int *stack);
 unsigned int *switch_to_handler(unsigned int *stack);
 
@@ -130,46 +137,46 @@ void tasks_scheduler(void)
     if (i > USER_PROCESS) /* No available tasks */
         return;
 
-    printfmt("KERNEL: Now we want to run id=%d\r\n", id);
+    TASK_DBG("KERNEL: Now we want to run id=%d\r\n", id);
     tasks[id].status = TASK_RUNNING;
     current_task_id = id;
     last_time = uptime;
 
     tasks[id].user_stack_ptr = run_proc(tasks[id].user_stack_ptr);
-    printfmt("KERNEL: uptime=%d, last_time=%d\r\n", uptime, last_time);
+    TASK_DBG("KERNEL: uptime=%d, last_time=%d\r\n", uptime, last_time);
     tasks[id].time += uptime - last_time;
     if (tasks[id].syscall_num > 0) {
-        printfmt("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
+        TASK_DBG("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
         switch (tasks[id].syscall_num) {
             case SYSCALL_GET_TASKID:
-                printfmt("KERNEL: Task ID = %d\r\n", tasks[id].id);
+                TASK_DBG("KERNEL: Task ID = %d\r\n", tasks[id].id);
                 tasks[id].syscall_retval = &tasks[id].id;
                 break;
             case SYSCALL_GET_PRIORITY:
-                printfmt("KERNEL: Priority = %d\r\n", tasks[id].priority);
+                TASK_DBG("KERNEL: Priority = %d\r\n", tasks[id].priority);
                 tasks[id].syscall_retval = &tasks[id].priority;
                 break;
             case SYSCALL_GET_EXETIME:
-                printfmt("KERNEL: EXETIME = %d\r\n", tasks[id].time);
+                TASK_DBG("KERNEL: EXETIME = %d\r\n", tasks[id].time);
                 tasks[id].syscall_retval = &tasks[id].time;
                 break;
             case SYSCALL_READ: {
                 struct buf_struct *buf_ptr = tasks[id].syscall_param;
                 extern char tmp_ch;
-                printfmt("KERNEL: READ buf=%x len=%d\r\n", buf_ptr->buf, buf_ptr->len);
+                TASK_DBG("KERNEL: READ buf=%x len=%d\r\n", buf_ptr->buf, buf_ptr->len);
                 /* get data from USART2 */
                 buf_ptr->buf[0] = tmp_ch;
                 tasks[id].syscall_retval = (void *)1;
                 break;
             }
             case SYSCALL_SLEEP:
-                printfmt("KERNEL: SLEEP = %d\r\n", *(int *)tasks[id].syscall_param);
+                TASK_DBG("KERNEL: SLEEP = %d\r\n", *(int *)tasks[id].syscall_param);
                 tasks[i].restart_time = uptime + *(int *)tasks[id].syscall_param;
                 tasks[id].status = TASK_BLOCK;
                 break;
             default:
-                printfmt("KERNEL: Unsupported syscall num\r\n");
+                TASK_DBG("KERNEL: Unsupported syscall num\r\n");
         }
         tasks[id].syscall_num = SYSCALL_INIT;
         tasks[id].syscall_param = 0;
