@@ -91,3 +91,6 @@ flash:
 
 style:
 	astyle --style=linux --exclude=$(EXTERN) -cnpswHUSR *.c,*.h
+
+sum:
+	cloc --exclude-dir=extern .
