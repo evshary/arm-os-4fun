@@ -8,6 +8,7 @@ struct task_control_block {
     unsigned int id;       /* Task id */
     unsigned int priority; /* Task priority */
     unsigned int time;     /* The execution time*/
+    unsigned int restart_time; /* Record the time to restart task */
     int syscall_num;
     void *syscall_param;
     void *syscall_retval;

@@ -53,3 +53,13 @@ int read(char *buf, int len)
     ret_val = (int)task_syscall_getretval();
     return ret_val;
 }
+
+void sleep(unsigned int time)
+{
+    task_syscall_setparam(SYSCALL_SLEEP, &time);
+    __asm__
+    (
+        "svc 0"
+    );
+    return;
+}

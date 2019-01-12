@@ -35,6 +35,7 @@ void tasks_init(void)
         tasks[i].status = TASK_NONE;
         tasks[i].priority = 0;
         tasks[i].time = 0;
+        tasks[i].restart_time = 0;
         tasks[i].syscall_num = 0;
         tasks[i].syscall_param = 0;
         tasks[i].user_stack_ptr = 0;
@@ -110,6 +111,14 @@ void tasks_scheduler(void)
     unsigned int last_time;
     int i, id;
 
+    /* Update the status of tasks */
+    for (i = 1; i < USER_PROCESS; i++) {
+        if (tasks[i].status == TASK_BLOCK && tasks[i].restart_time <= uptime) {
+            tasks[i].status = TASK_READY;
+            tasks[i].restart_time = 0;
+        }
+    }
+
     /* Select available tasks */
     /* Round robin scheduler */
     for (i = 1; i <= USER_PROCESS; i++) {
@@ -118,6 +127,9 @@ void tasks_scheduler(void)
             break;
         }
     }
+    if (i > USER_PROCESS) /* No available tasks */
+        return;
+
     printfmt("KERNEL: Now we want to run id=%d\r\n", id);
     tasks[id].status = TASK_RUNNING;
     current_task_id = id;
@@ -151,12 +163,18 @@ void tasks_scheduler(void)
                 tasks[id].syscall_retval = (void *)1;
                 break;
             }
+            case SYSCALL_SLEEP:
+                printfmt("KERNEL: SLEEP = %d\r\n", *(int *)tasks[id].syscall_param);
+                tasks[i].restart_time = uptime + *(int *)tasks[id].syscall_param;
+                tasks[id].status = TASK_BLOCK;
+                break;
             default:
                 printfmt("KERNEL: Unsupported syscall num\r\n");
         }
         tasks[id].syscall_num = SYSCALL_INIT;
         tasks[id].syscall_param = 0;
     }
-    tasks[id].status = TASK_READY;
+    if (tasks[id].status == TASK_RUNNING)
+        tasks[id].status = TASK_READY;
 }
 
