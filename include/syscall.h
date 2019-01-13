@@ -7,6 +7,7 @@
 #define SYSCALL_GET_EXETIME    3
 #define SYSCALL_READ           4
 #define SYSCALL_SLEEP          5
+#define SYSCALL_GET_CPU_USAGE  6
 
 struct buf_struct {
     char *buf;
@@ -18,6 +19,7 @@ int get_priority(void);
 int get_exetime(void);
 int read(char *buf, int len);
 void sleep(unsigned int ms);
+int get_cpu_usage(void);
 
 extern int cur_syscall_num;
 extern void *cur_syscall_param;

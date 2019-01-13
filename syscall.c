@@ -63,3 +63,15 @@ void sleep(unsigned int time)
     );
     return;
 }
+
+int get_cpu_usage(void)
+{
+    int cpu_usage;
+    task_syscall_setparam(SYSCALL_GET_CPU_USAGE, 0);
+    task_syscall_setretval(&cpu_usage);
+    __asm__
+    (
+        "svc 0"
+    );
+    return cpu_usage;
+}

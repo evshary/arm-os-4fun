@@ -9,7 +9,7 @@
 
 #define STACK_SIZE 512
 
-#define TASK_DEBUG 0
+#define TASK_DEBUG 1
 #if TASK_DEBUG
 #define TASK_DBG printfmt
 #else
@@ -41,7 +41,7 @@ void tasks_init(void)
         tasks[i].id = 0;
         tasks[i].status = TASK_NONE;
         tasks[i].priority = 0;
-        tasks[i].time = 0;
+        tasks[i].exe_time = 0;
         tasks[i].restart_time = 0;
         tasks[i].syscall_num = 0;
         tasks[i].syscall_param = 0;
@@ -103,6 +103,11 @@ void *task_syscall_getretval(void)
     return tasks[current_task_id].syscall_retval;
 }
 
+void task_syscall_setretval(void *retval)
+{
+    tasks[current_task_id].syscall_retval = retval;
+}
+
 void tasks_scheduler(void)
 {
     unsigned int last_time;
@@ -119,13 +124,16 @@ void tasks_scheduler(void)
     /* Select available tasks */
     /* Round robin scheduler */
     for (i = 1; i <= MAX_TASK_NUM; i++) {
+        /* We can run dummy_task only when no ready task */
+        if ((current_task_id + i) % MAX_TASK_NUM == 0) {
+            id = 0;
+            continue;
+        }
         if (tasks[(current_task_id + i) % MAX_TASK_NUM].status == TASK_READY) {
             id = (current_task_id + i) % MAX_TASK_NUM;
             break;
         }
     }
-    if (i > MAX_TASK_NUM) /* No available tasks */
-        return;
 
     TASK_DBG("KERNEL: Now we want to run id=%d\r\n", id);
     tasks[id].status = TASK_RUNNING;
@@ -134,7 +142,7 @@ void tasks_scheduler(void)
 
     tasks[id].user_stack_ptr = run_task(tasks[id].user_stack_ptr);
     TASK_DBG("KERNEL: uptime=%d, last_time=%d\r\n", uptime, last_time);
-    tasks[id].time += uptime - last_time;
+    tasks[id].exe_time += uptime - last_time;
     if (tasks[id].syscall_num > 0) {
         TASK_DBG("KERNEL: syscall_num=%d\r\n", tasks[id].syscall_num);
         /* Handling the system call */
@@ -148,8 +156,8 @@ void tasks_scheduler(void)
                 tasks[id].syscall_retval = &tasks[id].priority;
                 break;
             case SYSCALL_GET_EXETIME:
-                TASK_DBG("KERNEL: EXETIME = %d\r\n", tasks[id].time);
-                tasks[id].syscall_retval = &tasks[id].time;
+                TASK_DBG("KERNEL: EXETIME = %d\r\n", tasks[id].exe_time);
+                tasks[id].syscall_retval = &tasks[id].exe_time;
                 break;
             case SYSCALL_READ: {
                 struct buf_struct *buf_ptr = tasks[id].syscall_param;
@@ -162,11 +170,18 @@ void tasks_scheduler(void)
             }
             case SYSCALL_SLEEP:
                 TASK_DBG("KERNEL: SLEEP = %d\r\n", *(int *)tasks[id].syscall_param);
-                tasks[i].restart_time = uptime + *(int *)tasks[id].syscall_param;
+                tasks[id].restart_time = uptime + *(int *)tasks[id].syscall_param;
                 tasks[id].status = TASK_BLOCK;
                 break;
+            case SYSCALL_GET_CPU_USAGE: {
+                int *retval = tasks[id].syscall_retval;
+                *retval = 100 - ((tasks[0].exe_time * 100) / uptime);
+                TASK_DBG("KERNEL: CPU Usage = %d\r\n", *retval);
+                break;
+            }
             default:
                 TASK_DBG("KERNEL: Unsupported syscall num\r\n");
+                break;
         }
         tasks[id].syscall_num = SYSCALL_INIT;
         tasks[id].syscall_param = 0;
