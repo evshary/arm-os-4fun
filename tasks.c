@@ -9,7 +9,7 @@
 
 #define STACK_SIZE 512
 
-#define TASK_DEBUG 1
+#define TASK_DEBUG 0
 #if TASK_DEBUG
 #define TASK_DBG printfmt
 #else
@@ -98,11 +98,6 @@ void task_syscall_setparam(int syscall_num, void *param)
     tasks[current_task_id].syscall_param = param;
 }
 
-void *task_syscall_getretval(void)
-{
-    return tasks[current_task_id].syscall_retval;
-}
-
 void task_syscall_setretval(void *retval)
 {
     tasks[current_task_id].syscall_retval = retval;
@@ -149,15 +144,15 @@ void tasks_scheduler(void)
         switch (tasks[id].syscall_num) {
             case SYSCALL_GET_TASKID:
                 TASK_DBG("KERNEL: Task ID = %d\r\n", tasks[id].id);
-                tasks[id].syscall_retval = &tasks[id].id;
+                *(int *)tasks[id].syscall_retval = tasks[id].id;
                 break;
             case SYSCALL_GET_PRIORITY:
                 TASK_DBG("KERNEL: Priority = %d\r\n", tasks[id].priority);
-                tasks[id].syscall_retval = &tasks[id].priority;
+                *(int *)tasks[id].syscall_retval = tasks[id].priority;
                 break;
             case SYSCALL_GET_EXETIME:
                 TASK_DBG("KERNEL: EXETIME = %d\r\n", tasks[id].exe_time);
-                tasks[id].syscall_retval = &tasks[id].exe_time;
+                *(int *)tasks[id].syscall_retval = tasks[id].exe_time;
                 break;
             case SYSCALL_READ: {
                 struct buf_struct *buf_ptr = tasks[id].syscall_param;

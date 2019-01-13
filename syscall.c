@@ -4,54 +4,54 @@
 
 int get_taskid(void)
 {
-    void *ret_val;
+    int taskid;
     task_syscall_setparam(SYSCALL_GET_TASKID, 0);
+    task_syscall_setretval(&taskid);
     __asm__
     (
         "svc 0"
     );
-    ret_val = task_syscall_getretval();
-    return *((int *)ret_val);
+    return taskid;
 }
 
 int get_priority(void)
 {
-    void *ret_val;
+    int priority;
     task_syscall_setparam(SYSCALL_GET_PRIORITY, 0);
+    task_syscall_setretval(&priority);
     __asm__
     (
         "svc 0"
     );
-    ret_val = task_syscall_getretval();
-    return *((int *)ret_val);
+    return priority;
 }
 
 int get_exetime(void)
 {
-    void *ret_val;
+    int exetime;
     task_syscall_setparam(SYSCALL_GET_EXETIME, 0);
+    task_syscall_setretval(&exetime);
     __asm__
     (
         "svc 0"
     );
-    ret_val = task_syscall_getretval();
-    return *((int *)ret_val);
+    return exetime;
 }
 
 int read(char *buf, int len)
 {
-    int ret_val;
+    int read_len;
     struct buf_struct buf_ptr;
     buf_ptr.buf = buf;
     buf_ptr.len = len;
 
     task_syscall_setparam(SYSCALL_READ, &buf_ptr);
+    task_syscall_setretval(&read_len);
     __asm__
     (
         "svc 0"
     );
-    ret_val = (int)task_syscall_getretval();
-    return ret_val;
+    return read_len;
 }
 
 void sleep(unsigned int time)

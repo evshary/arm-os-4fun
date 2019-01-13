@@ -18,7 +18,6 @@ struct task_control_block {
 void tasks_init(void);
 int new_task(void *task_addr, int priority);
 void task_syscall_setparam(int syscall_num, void *param);
-void *task_syscall_getretval(void);
 void task_syscall_setretval(void *retval);
 void tasks_scheduler(void);
 
