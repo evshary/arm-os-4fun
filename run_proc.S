@@ -21,8 +21,8 @@ switch_to_handler:
 
     bx lr
 
-.global run_proc 
-run_proc:
+.global run_task 
+run_task:
     /* Save psr to r12 and save kernel's register to stack(msp) */
     mrs r12, psr
     push {r4-r12, lr}

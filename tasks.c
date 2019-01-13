@@ -16,11 +16,11 @@
 #define TASK_DBG(...)
 #endif
 
-unsigned int *run_proc(unsigned int *stack);
+unsigned int *run_task(unsigned int *stack);
 unsigned int *switch_to_handler(unsigned int *stack);
 
-unsigned int user_stack[USER_PROCESS][STACK_SIZE];
-struct task_control_block tasks[USER_PROCESS];
+unsigned int user_stack[MAX_TASK_NUM][STACK_SIZE];
+struct task_control_block tasks[MAX_TASK_NUM];
 unsigned char current_task_id;
 
 extern unsigned int uptime;
@@ -37,7 +37,7 @@ void tasks_init(void)
      * Ref2: https://www.ptt.cc/bbs/ASM/M.1534260340.A.DC5.html
      */
     switch_to_handler(&empty_stack[32]);
-    for (i = 0; i < USER_PROCESS; i++) {
+    for (i = 0; i < MAX_TASK_NUM; i++) {
         tasks[i].id = 0;
         tasks[i].status = TASK_NONE;
         tasks[i].priority = 0;
@@ -50,20 +50,20 @@ void tasks_init(void)
     current_task_id = -1;
 }
 
-int new_task(void *proc_addr, int priority)
+int new_task(void *task_addr, int priority)
 {
     unsigned int available_id = 0;
     int i;
 
-    /* Select empty tasks */
-    for (i = 0; i < USER_PROCESS; i++) {
+    /* Select empty task */
+    for (i = 0; i < MAX_TASK_NUM; i++) {
         if (tasks[i].id == 0) {
             available_id = i;
             break;
         }
     }
-    /* Not enough space for new process */
-    if (i >= USER_PROCESS)
+    /* Not enough space for new task */
+    if (i >= MAX_TASK_NUM)
         return -1;
     /*
      * We will pop the regiser with the following order, r4-r11, lr
@@ -82,14 +82,14 @@ int new_task(void *proc_addr, int priority)
      * to user thread mode. Control register can only make us enter user
      * thread mode from privileged thread mode, not privileged handler mode.
      * Therefore, if we don't use EXC_RETURN, it will cause problem while
-     * calling "svc" in process 2, because svc can only be called in
+     * calling "svc" in task 2, because svc can only be called in
      * user thread mode but we are in privileged handler mode now.
      * Control register just change stack from msp to psp but not from
      * privileged handler mode to user thread mode.
      */
     tasks[available_id].user_stack_ptr[8] = (unsigned int)0xFFFFFFFD;
-    /* It's necessary to init lr with process address first. */
-    tasks[available_id].user_stack_ptr[15] = (unsigned int)proc_addr;
+    /* It's necessary to init lr with task address first. */
+    tasks[available_id].user_stack_ptr[15] = (unsigned int)task_addr;
     /* PSR Thumb bit */
     tasks[available_id].user_stack_ptr[16] = (unsigned int)0x01000000;
 
@@ -119,7 +119,7 @@ void tasks_scheduler(void)
     int i, id;
 
     /* Update the status of tasks */
-    for (i = 1; i < USER_PROCESS; i++) {
+    for (i = 1; i < MAX_TASK_NUM; i++) {
         if (tasks[i].status == TASK_BLOCK && tasks[i].restart_time <= uptime) {
             tasks[i].status = TASK_READY;
             tasks[i].restart_time = 0;
@@ -128,13 +128,13 @@ void tasks_scheduler(void)
 
     /* Select available tasks */
     /* Round robin scheduler */
-    for (i = 1; i <= USER_PROCESS; i++) {
-        if (tasks[(current_task_id + i) % USER_PROCESS].status == TASK_READY) {
-            id = (current_task_id + i) % USER_PROCESS;
+    for (i = 1; i <= MAX_TASK_NUM; i++) {
+        if (tasks[(current_task_id + i) % MAX_TASK_NUM].status == TASK_READY) {
+            id = (current_task_id + i) % MAX_TASK_NUM;
             break;
         }
     }
-    if (i > USER_PROCESS) /* No available tasks */
+    if (i > MAX_TASK_NUM) /* No available tasks */
         return;
 
     TASK_DBG("KERNEL: Now we want to run id=%d\r\n", id);
@@ -142,7 +142,7 @@ void tasks_scheduler(void)
     current_task_id = id;
     last_time = uptime;
 
-    tasks[id].user_stack_ptr = run_proc(tasks[id].user_stack_ptr);
+    tasks[id].user_stack_ptr = run_task(tasks[id].user_stack_ptr);
     TASK_DBG("KERNEL: uptime=%d, last_time=%d\r\n", uptime, last_time);
     tasks[id].time += uptime - last_time;
     if (tasks[id].syscall_num > 0) {

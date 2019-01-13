@@ -8,15 +8,15 @@
 
 static char greet[] = "Hi, This is arm-os-4fun!\r\n";
 
-void dummy_proc(void)
+void dummy_task(void)
 {
     while (1);
 }
 
-void proc1(void)
+void task1(void)
 {
     int id, priority, exetime;
-    printfmt("USER1: This is process 1\r\n");
+    printfmt("USER1: This is task 1\r\n");
     id = get_taskid();
     printfmt("USER1: task id=%d\r\n", id);
     priority = get_priority();
@@ -32,10 +32,10 @@ void proc1(void)
     }
 }
 
-void proc2(void)
+void task2(void)
 {
     int id, priority, exetime;
-    printfmt("USER2: This is process 2\r\n");
+    printfmt("USER2: This is task 2\r\n");
     id = get_taskid();
     printfmt("USER2: task id=%d\r\n", id);
     priority = get_priority();
@@ -50,7 +50,7 @@ void proc2(void)
 
 void main(void)
 {
-    int proc_id[USER_PROCESS];
+    int task_id[MAX_TASK_NUM];
 
     uart_init();
     systick_init();
@@ -59,15 +59,15 @@ void main(void)
     malloc_init();
     tasks_init();
     /*
-     * We should start a dummy_proc to prevent no running process.
+     * We should start a dummy_task to prevent no running task.
      * This will cause infinite loop in kernel(Always in handler mode).
      */
-    proc_id[0] = new_task(dummy_proc, 0);
-    /* Create your own process */
-    proc_id[1] = new_task(proc1, 1);
-    printfmt("proc_id[1]=%d\r\n", proc_id[1]);
-    proc_id[2] = new_task(proc2, 2);
-    printfmt("proc_id[2]=%d\r\n", proc_id[2]);
+    task_id[0] = new_task(dummy_task, 0);
+    /* Create your own task */
+    task_id[1] = new_task(task1, 1);
+    printfmt("task_id[1]=%d\r\n", task_id[1]);
+    task_id[2] = new_task(task2, 2);
+    printfmt("task_id[2]=%d\r\n", task_id[2]);
     while (1) {
         tasks_scheduler();
     }
