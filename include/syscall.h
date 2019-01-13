@@ -8,9 +8,6 @@
 #define SYSCALL_READ           4
 #define SYSCALL_SLEEP          5
 
-extern int cur_syscall_num;
-extern void *cur_syscall_param;
-extern void *ret_val;
 struct buf_struct {
     char *buf;
     int len;
@@ -21,5 +18,9 @@ int get_priority(void);
 int get_exetime(void);
 int read(char *buf, int len);
 void sleep(unsigned int ms);
+
+extern int cur_syscall_num;
+extern void *cur_syscall_param;
+extern void *ret_val;
 
 #endif /*__SYSCALL_H__*/

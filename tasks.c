@@ -77,16 +77,6 @@ int new_task(void *task_addr, int priority)
      * While lr=0xfffffffd, ARM will go to user thread mode, change sp to psp,
      * and then pop the registers (par, pc, lr, r12, r3-r0) out from psp.
      */
-    /*
-     * We need to use lr=0xfffffffd, that is EXC_RETURN, to return back
-     * to user thread mode. Control register can only make us enter user
-     * thread mode from privileged thread mode, not privileged handler mode.
-     * Therefore, if we don't use EXC_RETURN, it will cause problem while
-     * calling "svc" in task 2, because svc can only be called in
-     * user thread mode but we are in privileged handler mode now.
-     * Control register just change stack from msp to psp but not from
-     * privileged handler mode to user thread mode.
-     */
     tasks[available_id].user_stack_ptr[8] = (unsigned int)0xFFFFFFFD;
     /* It's necessary to init lr with task address first. */
     tasks[available_id].user_stack_ptr[15] = (unsigned int)task_addr;

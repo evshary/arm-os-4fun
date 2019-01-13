@@ -13,7 +13,7 @@ switch_to_handler:
     msr control, r0
     /* isb means Instruction Synchronization Barrier */
     /* This makes sure the following command should be in correct privilege. */
-    /* ref: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHFJCAC.html */
+    /* Ref: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHFJCAC.html */
     isb
 
     /* Switch to handler mode */
@@ -27,7 +27,7 @@ run_task:
     mrs r12, psr
     push {r4-r12, lr}
     
-    /* Load saved register from user task */
+    /* Load saved register from user task. */
     ldmia r0!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}
     /* Setup psp */
     msr psp, r0
