@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "reg.h"
-#include "uart.h"
+#include "usart.h"
 #include "output.h"
 
 extern void main(void);

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdarg.h>
-#include "uart.h"
+#include "usart.h"
 #include "output.h"
 
 void print_str(const char *str)

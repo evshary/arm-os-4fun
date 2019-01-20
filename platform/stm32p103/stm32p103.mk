@@ -3,7 +3,7 @@ CUR_DIR = platform/stm32p103
 CPU = cortex-m3
 
 SRC += $(CUR_DIR)/start.c \
-	   $(CUR_DIR)/uart.c \
+	   $(CUR_DIR)/usart.c \
 	   $(CUR_DIR)/systick.c
 
 CFLAGS += \
