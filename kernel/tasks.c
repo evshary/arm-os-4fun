@@ -1,6 +1,7 @@
 #include "tasks.h"
 #include "syscall.h"
 #include "output.h"
+#include "uart.h"
 
 #define TASK_NONE      0
 #define TASK_READY     1
@@ -156,11 +157,10 @@ void tasks_scheduler(void)
                 break;
             case SYSCALL_READ: {
                 struct buf_struct *buf_ptr = tasks[id].syscall_param;
-                extern char tmp_ch;
+                int *retval = tasks[id].syscall_retval;
                 TASK_DBG("KERNEL: READ buf=%x len=%d\r\n", buf_ptr->buf, buf_ptr->len);
                 /* get data from USART2 */
-                buf_ptr->buf[0] = tmp_ch;
-                tasks[id].syscall_retval = (void *)1;
+                *retval = usart_read(buf_ptr->buf, buf_ptr->len);
                 break;
             }
             case SYSCALL_SLEEP:

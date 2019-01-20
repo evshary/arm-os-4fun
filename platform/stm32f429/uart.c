@@ -1,6 +1,15 @@
 #include <stdint.h>
 #include "output.h"
+#include "ringbuf.h"
 #include "reg.h"
+
+static RING_BUF usart2_buf;
+
+int usart_read(char *str, int len)
+{
+    /* TODO: Not done yet. */
+    return 0;
+}
 
 void print_char(char ch)
 {
@@ -223,6 +232,10 @@ static void enableUART(void)
  */
 void uart_init(void)
 {
+    /* Init serial buffer */
+    ringbuf_init(&usart2_buf);
+
+    /* Init USART */
     enableUartPeripheralCLOCK();
     enableGPIO();
     enableUART();

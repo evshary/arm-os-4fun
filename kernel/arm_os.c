@@ -5,6 +5,7 @@
 #include "tasks.h"
 #include "syscall.h"
 #include "malloc.h"
+#include "common.h"
 
 static char greet[] = "Hi, This is arm-os-4fun!\r\n";
 
@@ -26,8 +27,9 @@ void task1(void)
 
     while (1) {
         char buf[10];
+        memset(buf, 0, sizeof(buf));
         int ret = read(buf, 10);
-        printfmt("buf[0]=%c ret=%d\r\n", buf[0], ret);
+        printfmt("buf=%s ret=%d\r\n", buf, ret);
         sleep(1);
     }
 }

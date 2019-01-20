@@ -59,16 +59,7 @@ void usagefault_handler(void)
 void svc_handler(void);
 void pendsv_handler(void);
 void systick_handler(void);
-
-// TODO: for test now
-char tmp_ch;
-void USART2_IRQHandler()
-{
-    char ch;
-    if (read_char(&ch) != -1) {
-        tmp_ch = ch;
-    }
-}
+void USART2_IRQHandler();
 
 __attribute((section(".init_isr")))
 uint32_t *isr_vectors[] = {
