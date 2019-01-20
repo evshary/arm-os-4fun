@@ -18,8 +18,9 @@ CFLAGS = -fno-common -ffreestanding \
 		 -ffunction-sections -fdata-sections \
 		 -Iinclude -I.
 # Source Code
-SRC = arm_os.c run_proc.S tasks.c syscall.c output.c malloc/malloc.c \
-	  library/common.c library/ringbuf.c
+SRC = kernel/arm_os.c kernel/run_proc.S kernel/tasks.c kernel/syscall.c \
+	  library/output.c library/common.c library/ringbuf.c \
+	  malloc/malloc.c
 
 # Choose board
 BOARD ?= STM32P103
