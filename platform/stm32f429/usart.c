@@ -3,7 +3,7 @@
 #include "ringbuf.h"
 #include "reg.h"
 
-static RING_BUF usart2_buf;
+static RING_BUF usart_buf;
 
 static int read_char(char *ch)
 {
@@ -19,14 +19,14 @@ int usart_read(char *str, int len)
 {
     int i, min_len;
 
-    if (len > ringbuf_len(&usart2_buf)) {
-        min_len = ringbuf_len(&usart2_buf);
+    if (len > ringbuf_len(&usart_buf)) {
+        min_len = ringbuf_len(&usart_buf);
     } else {
         min_len = len;
     }
 
     for (i = 0; i < min_len; i++) {
-        ringbuf_read(&usart2_buf, &str[i]);
+        ringbuf_read(&usart_buf, &str[i]);
     }
     return min_len;
 }
@@ -255,7 +255,7 @@ static void enableUART(void)
 void uart_init(void)
 {
     /* Init serial buffer */
-    ringbuf_init(&usart2_buf);
+    ringbuf_init(&usart_buf);
 
     /* Init USART */
     enableUartPeripheralCLOCK();
@@ -270,6 +270,6 @@ void USART1_IRQHandler()
 {
     char ch;
     if (read_char(&ch) != -1) {
-        ringbuf_write(&usart2_buf, ch);
+        ringbuf_write(&usart_buf, ch);
     }
 }
