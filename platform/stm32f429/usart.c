@@ -5,10 +5,30 @@
 
 static RING_BUF usart2_buf;
 
+static int read_char(char *ch)
+{
+    if (USART1->SR & USART_SR_RXNE) {
+        *ch = USART1->DR;
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 int usart_read(char *str, int len)
 {
-    /* TODO: Not done yet. */
-    return 0;
+    int i, min_len;
+
+    if (len > ringbuf_len(&usart2_buf)) {
+        min_len = ringbuf_len(&usart2_buf);
+    } else {
+        min_len = len;
+    }
+
+    for (i = 0; i < min_len; i++) {
+        ringbuf_read(&usart2_buf, &str[i]);
+    }
+    return min_len;
 }
 
 void print_char(char ch)
@@ -225,6 +245,8 @@ static void enableUART(void)
     USART1->BRR = usart_baud_calc(USART1_BASE, USART1, 115200);
     /* Enable USART */
     USART1->CR1 |= USART_CR1_UE;
+    /* Enable RX Interrupt */
+    USART1->CR1 |= USART_CR1_RXNEIE;
 }
 
 /*
@@ -239,4 +261,15 @@ void uart_init(void)
     enableUartPeripheralCLOCK();
     enableGPIO();
     enableUART();
+
+    /* Enable interrupt from USART1 (NVIC level) */
+    NVIC_EnableIRQ(USART1_IRQn);
+}
+
+void USART1_IRQHandler()
+{
+    char ch;
+    if (read_char(&ch) != -1) {
+        ringbuf_write(&usart2_buf, ch);
+    }
 }
