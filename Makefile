@@ -4,7 +4,12 @@ OBJCOPY = $(CROSS)-objcopy
 OBJDUMP = $(CROSS)-objdump
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
 ST_FLASH = ../stlink/st-flash
-GDB = gdb-multiarch
+GDB_MULTI := $(shell command -v gdb-multiarch 2> /dev/null)
+ifdef GDB_MULTI
+	GDB = gdb-multiarch
+else
+	GDB = $(CROSS)-gdb
+endif
 # For extern project
 EXTERN = extern
 HAL = $(EXTERN)/hal
