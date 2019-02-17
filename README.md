@@ -8,6 +8,7 @@ Some of the functions are from jserv's [mini-arm-os](https://github.com/jserv/mi
 # Build Environment
 ## QEMU
 1. Install necessary package.
+  * Ubuntu
 ```
 sudo apt-get install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixman-1-dev bison flex
 # For 32 bit, lib32gcc1 is necessary
@@ -16,6 +17,11 @@ sudo apt-get install lib32gcc1 lib32ncurses5
 sudo apt-get install binutils-arm-none-eabi libnewlib-arm-none-eabi gcc-arm-none-eabi
 # install gdb
 sudo apt-get install gdb-multiarch
+```
+   * MAC
+```
+# Install cross compiler
+brew install gcc-arm-none-eabi
 ```
 2. We run the environment on qemu, so you should build the qemu first.
 ```
@@ -42,6 +48,7 @@ make qemu
 ```
 cd arm-os-4fun
 make DEBUG=1
+# start to run gdb
 make qemu_gdb
 # run in different terminal
 make qemu_connect
@@ -52,11 +59,16 @@ make qemu_connect
 sudo apt-get install cmake libtool libusb-1.0-0-dev libgtk-3-dev
 ```
 2. Clone stlink and build.
+  * Ubuntu
 ```
 git clone http://github.com/texane/stlink.git
 cd stlink
 cmake .
 make
+```
+  * MAC
+```
+brew install stlink
 ```
 3. clone the source code.
 ```
@@ -65,14 +77,20 @@ git clone https://github.com/evshary/arm-os-4fun.git
 4. Build and run.
 ```
 cd arm-os-4fun
+# F407
 make BOARD=STM32F407
+# F429
+make BOARD=STM32F429
 make flash
 ```
 5. If you want to run gdb
 ```
 cd arm-os-4fun
+# F407
+make DEBUG=1 BOARD=STM32F407
+# F429
 make DEBUG=1 BOARD=STM32F429
-make DEBUG=1 BOARD=STM32F429 debug
+# start to run gdb
 make st-util_gdb
 # run in different terminal
 make st-util_connect
