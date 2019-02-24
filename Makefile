@@ -3,7 +3,14 @@ CC = $(CROSS)-gcc
 OBJCOPY = $(CROSS)-objcopy
 OBJDUMP = $(CROSS)-objdump
 QEMU = ../qemu_stm32/arm-softmmu/qemu-system-arm
-ST_FLASH = ../stlink/st-flash
+STLINK := $(shell command -v st-flash 2> /dev/null)
+ifdef STLINK
+	ST_FLASH = st-flash
+	ST_UTIL = st-util
+else
+	ST_FLASH = ../stlink/st-flash
+	ST_UTIL = ../stlink/src/gdbserver/st-util
+endif
 GDB_MULTI := $(shell command -v gdb-multiarch 2> /dev/null)
 ifdef GDB_MULTI
 	GDB = gdb-multiarch
@@ -77,7 +84,7 @@ st-erase:
 
 st-util_gdb:
 	echo "Open another terminal and type \"make st-util_connect\""
-	../stlink/src/gdbserver/st-util
+	$(ST_UTIL)
 
 st-util_connect: $(OS_ELF)
 	$(GDB) $^ -ex "target remote:4242"
