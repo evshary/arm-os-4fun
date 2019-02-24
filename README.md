@@ -96,6 +96,29 @@ make st-util_gdb
 make st-util_connect
 ```
 
+# Serial Console
+We can connect the UART to see the debug message.
+
+The GPIO for UART is different by models.
+
+| model | GPIO |
+| --- | --- |
+| F429 | PA2:TX, PA3:RX |
+
+You can use serial application, like minicom to see the message.
+
+Serial Settings is 8N1, 115200.
+
+```
+# Ubuntu
+sudo apt-get install minicom
+# MAC
+brew install minicom
+# Usage
+minicom -s
+# ESC-Z for leaving minicom
+```
+
 # System
 arm-os-4fun now can run on qemu, which emulates [STM32-P103](https://www.olimex.com/Products/ARM/ST/STM32-P103/). The supported CPU is stm32f103, which is ARM Cortex M3.
 
