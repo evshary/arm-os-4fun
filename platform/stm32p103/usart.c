@@ -51,22 +51,62 @@ void uart_init(void)
     /* Init serial buffer */
     ringbuf_init(&usart_buf);
 
-    /* Init USART */
-    RCC->APB2ENR |= (uint32_t)(0x00000001 | 0x00000004);
-    RCC->APB1ENR |= (uint32_t)(0x00020000);
+    /* Init GPIO and USART clock */
+#if 0
+    // RCC->APB2ENR |= (uint32_t)(0x00000001 | 0x00000004);
+    // RCC->APB1ENR |= (uint32_t)(0x00020000);
+#else
+    __HAL_RCC_AFIO_CLK_ENABLE();   // RCC->APB2ENR: 0x00000001
+    __HAL_RCC_GPIOA_CLK_ENABLE();  // RCC->APB2ENR: 0x00000004
+    __HAL_RCC_USART2_CLK_ENABLE(); // RCC->APB1ENR: 0x00020000
+#endif
 
-    /* USART2 Configuration, Rx->PA3, Tx->PA2 */
+    /* GPIO Config, Rx->PA3, Tx->PA2 */
+#if 0
     GPIOA->CRL = 0x00004B00;
     GPIOA->CRH = 0x44444444;
     GPIOA->ODR = 0x00000000;
     GPIOA->BSRR = 0x00000000;
     GPIOA->BRR = 0x00000000;
+#else
+    GPIO_InitTypeDef gpio_tx_init = {
+        .Pin = GPIO_PIN_2,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_HIGH,
+    };
+    GPIO_InitTypeDef gpio_rx_init = {
+        .Pin = GPIO_PIN_3,
+        .Mode = GPIO_MODE_INPUT,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_HIGH,
+    };
+    HAL_GPIO_Init(GPIOA, &gpio_tx_init);
+    HAL_GPIO_Init(GPIOA, &gpio_rx_init);
+#endif
 
+    /* USART2 Config: 8N1 no flow control */
+#if 0
     USART2->CR1 = 0x0000000C;
     USART2->CR2 = 0x00000000;
     USART2->CR3 = 0x00000000;
     USART2->CR1 |= USART_CR1_UE; /* 0x2000 */
     USART2->CR1 |= USART_CR1_RXNEIE; /* 0x0020 */
+#else
+    UART_HandleTypeDef uart_init = {
+        .Instance = USART2,
+        .Init = {
+            .BaudRate = 115200,
+            .WordLength = UART_WORDLENGTH_8B,
+            .StopBits = UART_STOPBITS_1,
+            .Parity = UART_PARITY_NONE,
+            .HwFlowCtl = UART_HWCONTROL_NONE,
+            .Mode = UART_MODE_TX_RX | UART_IT_RXNE,
+            .OverSampling = UART_OVERSAMPLING_16,
+        },
+    };
+    HAL_UART_Init(&uart_init);
+#endif
 
     /* Enable interrupt from USART2 (NVIC level) */
     NVIC_EnableIRQ(USART2_IRQn);
