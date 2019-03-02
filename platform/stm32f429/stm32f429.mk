@@ -4,7 +4,12 @@ CPU = cortex-m4
 
 SRC += $(CUR_DIR)/start.c \
 	   $(CUR_DIR)/usart.c \
-	   $(CUR_DIR)/systick.c
+	   $(CUR_DIR)/systick.c \
+       $(HAL)/TARGET_STM/TARGET_STM32F4/device/system_stm32f4xx.c     \
+       $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_rcc.c    \
+       $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_rcc_ex.c \
+       $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_gpio.c   \
+       $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_uart.c
 
 CFLAGS += \
     -I$(CUR_DIR) \
@@ -18,9 +23,3 @@ CFLAGS += \
 	-I$(HAL)/TARGET_STM/TARGET_STM32F4/TARGET_STM32F429xI \
     -I$(HAL)/TARGET_STM/TARGET_STM32F4/TARGET_STM32F429xI/device \
     -I$(HAL)/TARGET_STM/TARGET_STM32F4/TARGET_STM32F429xI/TARGET_DISCO_F429ZI
-
-SRC += $(HAL)/TARGET_STM/TARGET_STM32F4/device/system_stm32f4xx.c
-SRC += $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_rcc.c
-SRC += $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_rcc_ex.c
-SRC += $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_gpio.c
-SRC += $(HAL)/TARGET_STM/TARGET_STM32F4/device/stm32f4xx_hal_uart.c
