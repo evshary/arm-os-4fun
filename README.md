@@ -103,7 +103,7 @@ The GPIO for UART is different by models.
 
 | model | GPIO |
 | --- | --- |
-| F429 | PA2:TX, PA3:RX |
+| F429 | PA9:TX, PA10:RX |
 
 You can use serial application, like minicom to see the message.
 
@@ -129,3 +129,15 @@ You can reference the link below.
 * [The Definitive Guide to ARM® Cortex®-M3 and Cortex®-M4 Processors](https://www.amazon.com/Definitive-Guide-Cortex%C2%AE-M3-Cortex%C2%AE-M4-Processors/dp/0124080820)
 * [RM0008 Reference manual for STM32F10xxx/20xxx/21xxx/L1xxxx](https://www.st.com/content/ccc/resource/technical/document/reference_manual/59/b9/ba/7f/11/af/43/d5/CD00171190.pdf/files/CD00171190.pdf/jcr:content/translations/en.CD00171190.pdf)
 * [PM0056 Programming manual for STM32F101xx, STM32F102xx, STM32F103xx, STM32F105xx and STM32F107xx](https://www.st.com/content/ccc/resource/technical/document/programming_manual/5b/ca/8d/83/56/7f/40/08/CD00228163.pdf/files/CD00228163.pdf/jcr:content/translations/en.CD00228163.pdf)
+
+# Features
+## Done
+* Context Switch (Use SysTick)
+* System Call
+* malloc/free
+
+## Future
+* basic shell
+* message queue/IPC
+* resource protection
+* file system
