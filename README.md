@@ -1,4 +1,5 @@
 # arm-os-4fun
+
 This is OS based on ARM for fun.
 
 We can learn OS concept and ARM architecture by creating the OS.
@@ -6,11 +7,15 @@ We can learn OS concept and ARM architecture by creating the OS.
 Some of the functions are from jserv's [mini-arm-os](https://github.com/jserv/mini-arm-os).
 
 # Build Environment
+
 ## QEMU
+
 1. Install necessary package.
   * Ubuntu
-```
+```bash
 sudo apt-get install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixman-1-dev bison flex
+# If you are using Ubuntu 20.04, run the following command
+sudo apt-get install build-essential python zlib1g-dev libglib2.0-dev libpixman-1-dev libtool libfdt-dev
 # For 32 bit, lib32gcc1 is necessary
 sudo apt-get install lib32gcc1 lib32ncurses5
 # Install cross compiler
@@ -19,12 +24,12 @@ sudo apt-get install binutils-arm-none-eabi libnewlib-arm-none-eabi gcc-arm-none
 sudo apt-get install gdb-multiarch
 ```
    * MAC
-```
+```bash
 # Install cross compiler
 brew install gcc-arm-none-eabi
 ```
 2. We run the environment on qemu, so you should build the qemu first.
-```
+```bash
 git clone https://github.com/beckus/qemu_stm32.git
 cd qemu_stm32
 ./configure --disable-werror --enable-debug \
@@ -35,17 +40,17 @@ cd qemu_stm32
 make
 ```
 3. clone the source code.
-```
+```bash
 git clone https://github.com/evshary/arm-os-4fun.git
 ```
 4. Build and run.
-```
+```bash
 cd arm-os-4fun
 make
 make qemu
 ```
 5. If you want to run gdb
-```
+```bash
 cd arm-os-4fun
 make DEBUG=1
 # start to run gdb
@@ -53,29 +58,31 @@ make qemu_gdb
 # run in different terminal
 make qemu_connect
 ```
+
 ## STM32F4
+
 1. Install necessary package.
-```
+```bash
 sudo apt-get install cmake libtool libusb-1.0-0-dev libgtk-3-dev
 ```
 2. Clone stlink and build.
   * Ubuntu
-```
+```bash
 git clone http://github.com/texane/stlink.git
 cd stlink
 cmake .
 make
 ```
   * MAC
-```
+```bash
 brew install stlink
 ```
 3. clone the source code.
-```
+```bash
 git clone https://github.com/evshary/arm-os-4fun.git
 ```
 4. Build and run.
-```
+```bash
 cd arm-os-4fun
 # F407
 make BOARD=STM32F407
@@ -84,7 +91,7 @@ make BOARD=STM32F429
 make flash
 ```
 5. If you want to run gdb
-```
+```bash
 cd arm-os-4fun
 # F407
 make DEBUG=1 BOARD=STM32F407
@@ -97,6 +104,7 @@ make st-util_connect
 ```
 
 # Serial Console
+
 We can connect the UART to see the debug message.
 
 The GPIO for UART is different by models.
@@ -109,7 +117,7 @@ You can use serial application, like minicom to see the message.
 
 Serial Settings is 8N1, 115200.
 
-```
+```bash
 # Ubuntu
 sudo apt-get install minicom
 # MAC
@@ -120,6 +128,7 @@ minicom -s
 ```
 
 # System
+
 arm-os-4fun now can run on qemu, which emulates [STM32-P103](https://www.olimex.com/Products/ARM/ST/STM32-P103/). The supported CPU is stm32f103, which is ARM Cortex M3.
 
 The OS also supports [STM32F429I](https://www.st.com/en/evaluation-tools/32f429idiscovery.html), which is ARM Cortex M4.
@@ -131,6 +140,7 @@ You can reference the link below.
 * [PM0056 Programming manual for STM32F101xx, STM32F102xx, STM32F103xx, STM32F105xx and STM32F107xx](https://www.st.com/content/ccc/resource/technical/document/programming_manual/5b/ca/8d/83/56/7f/40/08/CD00228163.pdf/files/CD00228163.pdf/jcr:content/translations/en.CD00228163.pdf)
 
 # Features
+
 ## Done
 * Context Switch (Use SysTick)
 * System Call
