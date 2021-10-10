@@ -119,6 +119,8 @@ You can use serial application, like minicom to see the message.
 
 Serial Settings is 8N1, 115200.
 
+NOTE: green is RX, white is TX, and also remember to connect ground.
+
 ```bash
 # Ubuntu
 sudo apt install minicom
