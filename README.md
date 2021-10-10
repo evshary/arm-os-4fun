@@ -13,15 +13,17 @@ Some of the functions are from jserv's [mini-arm-os](https://github.com/jserv/mi
 1. Install necessary package.
   * Ubuntu
 ```bash
-sudo apt-get install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixman-1-dev bison flex
+sudo apt install zlib1g-dev libsdl1.2-dev automake autoconf libtool libpixman-1-dev bison flex
 # If you are using Ubuntu 20.04, run the following command
-sudo apt-get install build-essential python zlib1g-dev libglib2.0-dev libpixman-1-dev libtool libfdt-dev
+sudo apt install build-essential python zlib1g-dev libglib2.0-dev libpixman-1-dev libtool libfdt-dev
 # For 32 bit, lib32gcc1 is necessary
-sudo apt-get install lib32gcc1 lib32ncurses5
+sudo apt install lib32gcc1 lib32ncurses5
 # Install cross compiler
-sudo apt-get install binutils-arm-none-eabi libnewlib-arm-none-eabi gcc-arm-none-eabi
+sudo apt install binutils-arm-none-eabi libnewlib-arm-none-eabi gcc-arm-none-eabi
 # install gdb
-sudo apt-get install gdb-multiarch
+sudo apt install gdb-multiarch
+# install necessary packages
+sudo apt install astyle
 ```
    * MAC
 ```bash
@@ -63,7 +65,7 @@ make qemu_connect
 
 1. Install necessary package.
 ```bash
-sudo apt-get install cmake libtool libusb-1.0-0-dev libgtk-3-dev
+sudo apt install cmake libtool libusb-1.0-0-dev libgtk-3-dev
 ```
 2. Clone stlink and build.
   * Ubuntu
@@ -119,7 +121,7 @@ Serial Settings is 8N1, 115200.
 
 ```bash
 # Ubuntu
-sudo apt-get install minicom
+sudo apt install minicom
 # MAC
 brew install minicom
 # Usage
