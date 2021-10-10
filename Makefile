@@ -8,8 +8,8 @@ ifdef STLINK
 	ST_FLASH = st-flash
 	ST_UTIL = st-util
 else
-	ST_FLASH = ../stlink/st-flash
-	ST_UTIL = ../stlink/src/gdbserver/st-util
+	ST_FLASH = ../stlink/bin/st-flash
+	ST_UTIL = ../stlink/bin/st-util
 endif
 GDB_MULTI := $(shell command -v gdb-multiarch 2> /dev/null)
 ifdef GDB_MULTI
@@ -77,7 +77,7 @@ distclean: clean
 	rm -rf $(HAL)
 
 st-flash: $(OS_BINARY)
-	../stlink/st-flash --reset write $(OS_BINARY) 0x8000000
+	../stlink/bin/st-flash --reset write $(OS_BINARY) 0x8000000
 
 st-erase:
 	st-flash erase
